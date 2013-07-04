@@ -124,6 +124,7 @@ public class MainActivity extends FragmentActivity implements
 				mAdapterView.stopLoadMore();
 				mAdapter.addItemLast(result);
 				mAdapter.notifyDataSetChanged();
+				//mAdapterView.setAdapter(mAdapter);
 			}else if(mType == 3){//refresh
 				mAdapterView.stopLoadMore();
 				mAdapter.addItemRefresh(result);
@@ -462,7 +463,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 		@Override
-		public Object getItem(int arg0) {
+		public NewInfo getItem(int arg0) {
 			return mInfos.get(arg0);
 		}
 
@@ -498,6 +499,29 @@ public class MainActivity extends FragmentActivity implements
 		InitImageView();
 		InitTextView();
 		InitViewPager();
+		
+		
+		mImageFetcher.setExitTasksEarly(false);
+		mAdapterView2.setAdapter(mAdapter2);
+		mAdapterView.setAdapter(mAdapter);
+		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(PLA_AdapterView<?> parent, View view,
+					int position, long id) {
+				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+				startActivity(new Intent(MainActivity.this,author.class));
+			}
+		});
+		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(PLA_AdapterView<?> parent, View view,
+					int position, long id) {
+				ScrollUtils.picId = mAdapter2.getItem(position -1).getPicId();
+				startActivity(new Intent(MainActivity.this,author.class));
+			}
+		});
+		int current_page_refresh = 1;
+		AddItemToContainer(currentPage, 3 ,current_page_refresh);
 	}
 
 	@Override
@@ -514,27 +538,6 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mImageFetcher.setExitTasksEarly(false);
-		mAdapterView2.setAdapter(mAdapter2);
-		mAdapterView.setAdapter(mAdapter);
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
-		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = newInfo.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
-		int current_page_refresh = 1;
-		AddItemToContainer(currentPage, 3 ,current_page_refresh);
 	}
 
 	@Override
@@ -546,22 +549,22 @@ public class MainActivity extends FragmentActivity implements
 	// ÏÂÀ­Ë¢ÐÂ
 	@Override
 	public void onRefresh() {
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
-		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = newInfo.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
+//		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(PLA_AdapterView<?> parent, View view,
+//					int position, long id) {
+//				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+//				startActivity(new Intent(MainActivity.this,author.class));
+//			}
+//		});
+//		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(PLA_AdapterView<?> parent, View view,
+//					int position, long id) {
+//				ScrollUtils.picId = newInfo.get(position-1).getPicId();
+//				startActivity(new Intent(MainActivity.this,author.class));
+//			}
+//		});
 		int current_page_down = 1;
 		AddItemToContainer(++currentPage, 1 ,current_page_down);
 	}
@@ -571,22 +574,22 @@ public class MainActivity extends FragmentActivity implements
 	public void onLoadMore() {
 		new_current_page = new_current_page+1;
 		Log.e("new_current_page=", new_current_page+"");
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
-		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = newInfo.get(position-1).getPicId();
-				startActivity(new Intent(MainActivity.this,author.class));
-			}
-		});
+//		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(PLA_AdapterView<?> parent, View view,
+//					int position, long id) {
+//				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+//				startActivity(new Intent(MainActivity.this,author.class));
+//			}
+//		});
+//		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+//			@Override
+//			public void onItemClick(PLA_AdapterView<?> parent, View view,
+//					int position, long id) {
+//				ScrollUtils.picId = newInfo.get(position-1).getPicId();
+//				startActivity(new Intent(MainActivity.this,author.class));
+//			}
+//		});
 		AddItemToContainer(++currentPage, 2 ,new_current_page);
 	}
 

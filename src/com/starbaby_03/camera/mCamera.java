@@ -107,7 +107,7 @@ public class mCamera extends Activity implements OnClickListener,
 	private ImageButton imgBnt1, imgBnt2, imgBnt3;
 	private static int FLAG = 0;// 0,1普通拍摄.3,边框拍摄。2,人脸捕获拍摄.
 	private static int FFLAG = 0;
-	private static int viewFlag = 2;// 横屏。进人人脸拍摄
+	private static int viewFlag = 1;// 竖屏。进入普通拍
 	private PopupWindow mPopupWindow;
 	float sX, sY;
 	int sW, sH;
@@ -190,13 +190,20 @@ public class mCamera extends Activity implements OnClickListener,
 			// 添加相框
 			Bitmap frame = BitmapFactory.decodeResource(getResources(),
 					photoFrame.list_MyCamera[frameNo]);
-			rotaBitmap = montageBitmap(frame, rotaBitmap, 0, 0);
-			// 保存图片到sdcard
-			if (null != rotaBitmap) {
-				new savePhoto().saveJpeg(rotaBitmap);
+			if(frame !=null){
+				rotaBitmap = montageBitmap(frame, monBM, 0, 0);
+				// 保存图片到sdcard
+//				if (null != rotaBitmap) {
+//					new savePhoto().saveJpeg(rotaBitmap);
+//				}
+			}else{
+				rotaBitmap = monBM;
 			}
-			mCamera.startPreview();
-			isPreview = true;
+			cameraUtils.bitmap = rotaBitmap;
+			startActivity(new Intent(mCamera.this,operatePic.class));
+			mCamera.this.finish();
+//			mCamera.startPreview();
+//			isPreview = true;
 		}
 	};
 	private PictureCallback myFaceJpegCallback = new PictureCallback()
@@ -547,6 +554,7 @@ public class mCamera extends Activity implements OnClickListener,
 				camera_imageview.setVisibility(8);
 				viewFlag = 2;// 横屏，进入人脸捕获拍摄
 				FLAG = 2;
+				FFLAG = 6;
 			} else if (viewFlag == 2) {
 				mPopupWindow.dismiss();
 			}

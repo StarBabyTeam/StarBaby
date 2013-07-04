@@ -447,24 +447,31 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			public void onClick(DialogInterface dialog, int which) {
 				
 				picDescribe = et1.getText().toString();
-				String contentUrl = null;
+//				String contentUrl = null;
 				//先上传照片服务端 获取照片url
-				File file = new File(saveFile.operateName);
+				final File file = new File(saveFile.operateName);
 				if(file != null){
-					String request = UploadUtil.uploadFile(file,contentUtils.registerImgUrl);
-					// json解析获取的url
-					try {
-						contentUrl = new JsonObject().getIMAGEURl(request);
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					if(contentUrl !=null && contentUrl !=""){
-						Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picDescribe, 2);
-					}
-							
+					Thread thread = new Thread(){
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							super.run();
+							String request = UploadUtil.uploadFile(file,contentUtils.registerImgUrl);
+							// json解析获取的url
+							try {
+								String contentUrl = new JsonObject().getIMAGEURl(request);
+								if(contentUrl !=null && contentUrl !=""){
+									Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picDescribe, 2);
+								}
+							} catch (JSONException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					};
+					thread.start();
 				}
-				
 			}
 		});
 		AlertDialog alert = builder.create();

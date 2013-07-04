@@ -6,6 +6,7 @@ import com.example.starbaby_03.R;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.scroll.scroll;
 import com.starbaby_03.scroll.scrollOperate;
+import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.cameraUtils;
 
 import android.app.Activity;
@@ -63,7 +64,9 @@ OnClickListener{
 		case R.id.camera_operatepic_ibnt3://√¿ªØ
 			try {
 				new savePhoto().takePhoto(cameraUtils.bitmap);
-				startActivity(new Intent(operatePic.this,scroll.class));
+				Intent intent = new Intent(operatePic.this,scroll.class);
+				intent.putExtra(ScrollUtils.INTENT_FLAG, ScrollUtils.CAMERA_IMAGE);
+				startActivity(intent);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
