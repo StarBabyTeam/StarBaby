@@ -75,7 +75,7 @@ public class MainActivity extends FragmentActivity implements
 	private ImageButton iBnt1, iBnt2, iBnt3;
 	int scroll_height;
 	LayoutInflater inflate;
-	private ImageFetcher mImageFetcher;
+	private static ImageFetcher mImageFetcher;
 	private XListView mAdapterView = null;
 	private XListView2 mAdapterView2 = null;
 	private StaggeredAdapter mAdapter = null;
@@ -412,45 +412,38 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			ViewHolder holder;
 			NewInfo duitangInfo = mInfos.get(position);
-
-			if (convertView == null) {
 				LayoutInflater layoutInflator = LayoutInflater.from(parent
 						.getContext());
 				convertView = layoutInflator.inflate(R.layout.main_infos_list,
 						null);
-				holder = new ViewHolder();
-				holder.imageView = (ScaleImageView) convertView
+				ScaleImageView imageView = (ScaleImageView) convertView
 						.findViewById(R.id.news_pic);
-				holder.contentView = (TextView) convertView
+				TextView contentView = (TextView) convertView
 						.findViewById(R.id.news_name);
-				holder.timeView = (TextView) convertView
+				TextView timeView = (TextView) convertView
 						.findViewById(R.id.news_note);
-				convertView.setTag(holder);
-			}
-
-			holder = (ViewHolder) convertView.getTag();
-			holder.imageView.setImageWidth(duitangInfo.getWidth());
-			holder.imageView.setImageHeight(duitangInfo.getHeight());
+				
+			imageView.setImageWidth(duitangInfo.getWidth());
+			imageView.setImageHeight(duitangInfo.getHeight());
 			if (duitangInfo.getAuthorList().size() == 1
 					&& duitangInfo.getCommentList().size() == 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
 			} else if (duitangInfo.getAuthorList().size() > 1
 					&& duitangInfo.getCommentList().size() > 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
-				holder.timeView.setText(duitangInfo.getAuthorList().get(1)
+				timeView.setText(duitangInfo.getAuthorList().get(1)
 						+ ":" + duitangInfo.getCommentList().get(1));
 			}
 			if(duitangInfo.getIsrc().length()!=0){
-				mImageFetcher.loadImage(duitangInfo.getIsrc(), holder.imageView);
+				mImageFetcher.loadImage(duitangInfo.getIsrc(), imageView);
 			}
 			return convertView;
 		}
 
-		class ViewHolder {
+	    class ViewHolder {
 			ScaleImageView imageView;
 			TextView contentView;
 			TextView timeView;
@@ -549,22 +542,6 @@ public class MainActivity extends FragmentActivity implements
 	// ÏÂÀ­Ë¢ÐÂ
 	@Override
 	public void onRefresh() {
-//		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(PLA_AdapterView<?> parent, View view,
-//					int position, long id) {
-//				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-//				startActivity(new Intent(MainActivity.this,author.class));
-//			}
-//		});
-//		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(PLA_AdapterView<?> parent, View view,
-//					int position, long id) {
-//				ScrollUtils.picId = newInfo.get(position-1).getPicId();
-//				startActivity(new Intent(MainActivity.this,author.class));
-//			}
-//		});
 		int current_page_down = 1;
 		AddItemToContainer(++currentPage, 1 ,current_page_down);
 	}
@@ -574,22 +551,6 @@ public class MainActivity extends FragmentActivity implements
 	public void onLoadMore() {
 		new_current_page = new_current_page+1;
 		Log.e("new_current_page=", new_current_page+"");
-//		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(PLA_AdapterView<?> parent, View view,
-//					int position, long id) {
-//				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-//				startActivity(new Intent(MainActivity.this,author.class));
-//			}
-//		});
-//		mAdapterView2.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-//			@Override
-//			public void onItemClick(PLA_AdapterView<?> parent, View view,
-//					int position, long id) {
-//				ScrollUtils.picId = newInfo.get(position-1).getPicId();
-//				startActivity(new Intent(MainActivity.this,author.class));
-//			}
-//		});
 		AddItemToContainer(++currentPage, 2 ,new_current_page);
 	}
 
