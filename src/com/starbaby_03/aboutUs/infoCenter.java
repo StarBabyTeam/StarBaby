@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
+import com.starbaby_03.Gallery.mapStorage;
 import com.starbaby_03.aboutUs.infoCenter.StaggeredAdapter.ViewHolder;
 import com.starbaby_03.main.HotInfo;
 import com.starbaby_03.main.Helper;
@@ -82,6 +83,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 	public ArrayList<HotInfo> duitangs;
 	private int new_current_page_down = 1;//最新 ：当前页面，用于下拉，向接口获取数据。
 	private int new_current_page_up = 1;//最新 ：当前页面，用于上拉，向接口获取数据。
+	private TextView tv3,tv4;
 	private int FLAG = 1;
 	/**
 	 * 相册下的图片读取
@@ -309,10 +311,15 @@ public class infoCenter extends Activity implements IXListViewListener,
 
 	private void listener() {
 		iBnt1.setOnClickListener(this);
+		tv3.setOnClickListener(this);
+		tv4.setOnClickListener(this);
 	}
 
 	private void init() {
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_infocenter_ibnt1);
+		tv3 = (TextView) findViewById(R.id.aboutus_infocenter_tv3);
+		tv4 = (TextView) findViewById(R.id.aboutus_infocenter_tv4);
+		tv4.setText("/n"+"私密"+"/n"+"相册");
 	}
 
 	// 第一次导入刷新
@@ -435,6 +442,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
+						tv3.setText(albumsize+"/n"+"个性"+"/n"+"晒图");
 						Log.e("aboutUsUtils_list.get(0).getAlbumid()=",aboutUsUtils_list.get(0).getAlbumid()+"");
 						gv.setAdapter(new MyGridView(infoCenter.this,
 								aboutUsUtils_list));
@@ -515,8 +523,8 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
-			convertView = inflate.inflate(
+		public View getView(final int position, View convertView1, ViewGroup parent) {
+			View convertView = inflate.inflate(
 					R.layout.aboutus_infocenter_store_frame, null);
 			name = (TextView) convertView
 					.findViewById(R.id.aboutus_infocenter_store_frame_textview);
@@ -601,7 +609,14 @@ public class infoCenter extends Activity implements IXListViewListener,
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.aboutus_infocenter_ibnt1:
-			startActivity(new Intent(this, MainActivity.class));
+//			startActivity(new Intent(this, MainActivity.class));
+			this.finish();
+			break;
+		case R.id.aboutus_infocenter_tv3:
+			pager.setCurrentItem(0);
+			break;
+		case R.id.aboutus_infocenter_tv4:
+			startActivity(new Intent(this,mapStorage.class));
 			break;
 		}
 	}

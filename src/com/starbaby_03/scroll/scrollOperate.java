@@ -112,7 +112,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 				searchFile();
 			}else if(str.equals("release")){//分享出去
 				//首先获取线上所有相册
-				getFrame(191206388,1);
+				getFrame(contentUtils.spGetInfo.getInt("uid", 0),1);
 			}
 			break;	
 		}
@@ -410,6 +410,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			tv.invalidate();
 			tv.setText("选择相册");
 			View view = inflate.inflate(R.layout.scroll_dialog_spiner, null);
+			final EditText et = (EditText)view. findViewById(R.id.gallery_dialog_spiner_edittext);
+			final TextView tv2 = (TextView) view.findViewById(R.id.gallery_dialog_spiner_textview2);
 			Spinner sp = (Spinner) view.findViewById(R.id.scroll_dialog_note_sp);
 			AlertDialog.Builder builder = new AlertDialog.Builder(scrollOperate.this);
 			adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item,
@@ -445,37 +447,98 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
+				int length3 = et.getText().toString().length();
 				picDescribe = et1.getText().toString();
-//				String contentUrl = null;
-				//先上传照片服务端 获取照片url
-				final File file = new File(saveFile.operateName);
-				if(file != null){
-					Thread thread = new Thread(){
+				if(picDescribe.length() == 0){
+					//先上传照片服务端 获取照片url
+					final File file = new File(saveFile.operateName);
+					if(file != null){
+						Thread thread = new Thread(){
 
-						@Override
-						public void run() {
-							// TODO Auto-generated method stub
-							super.run();
-							String request = UploadUtil.uploadFile(file,contentUtils.registerImgUrl);
-							// json解析获取的url
-							try {
-								String contentUrl = new JsonObject().getIMAGEURl(request);
-								if(contentUrl !=null && contentUrl !=""){
-									Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picDescribe, 2);
+							@Override
+							public void run() {
+								super.run();
+								String request = UploadUtil.uploadFile(file,contentUtils.registerImgUrl);
+								// json解析获取的url
+								try {
+									String contentUrl = new JsonObject().getIMAGEURl(request);
+									if(contentUrl !=null && contentUrl !=""){
+										Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picDescribe, 2);
+									}
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
-							} catch (JSONException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
 							}
-						}
-					};
-					thread.start();
+						};
+						thread.start();
+					}
+				}else{
+					LoginAddAlbum( contentUtils.spGetInfo.getInt("uid", 0),contentUtils.spGetInfo.getString("psw", ""),picDescribe,2);
 				}
 			}
 		});
 		AlertDialog alert = builder.create();
 		alert.show();
+		}
+		void LoginAddAlbum(int uid ,String pwd,String name,int sys){
+			List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
+			parameterList.add(new RequestParameter("uid", uid+""));
+			parameterList.add(new RequestParameter("pwd", pwd));
+			parameterList.add(new RequestParameter("name", name));
+			parameterList.add(new RequestParameter("sys", sys+""));
+			AsyncHttpPost httpost = new AsyncHttpPost(null,
+					contentUtils.sendPicUrl, parameterList,
+					new RequestResultCallback() {
+
+						@Override
+						public void onSuccess(Object o) {
+							final String result = (String) o;
+							scrollOperate.this.runOnUiThread(new Runnable() {
+								
+								@Override
+								public void run() {
+									Log.e("result=", result);
+									JSONObject json;
+									try {
+										json = new JSONObject(result);
+										final int albumidId = json.getInt("albumid");
+										final File file = new File(saveFile.operateName);
+										if(file != null){
+											Thread thread = new Thread(){
+
+												@Override
+												public void run() {
+													super.run();
+													String request = UploadUtil.uploadFile(file,contentUtils.registerImgUrl);
+													// json解析获取的url
+													try {
+														String contentUrl = new JsonObject().getIMAGEURl(request);
+														if(contentUrl !=null && contentUrl !=""){
+															Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), albumidId,contentUrl, picDescribe, 2);
+														}
+													} catch (JSONException e) {
+														// TODO Auto-generated catch block
+														e.printStackTrace();
+													}
+												}
+											};
+											thread.start();
+										}
+									} catch (JSONException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								}
+							});
+						}
+						@Override
+						public void onFail(Exception e) {
+							// TODO Auto-generated method stub
+						}
+					});
+			DefaultThreadPool.getInstance().execute(httpost);
+			
 		}
 		void Login(int uid,String pwd,int Albumid,String Picurl,String Txt ,int Sys){
 			List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
@@ -492,13 +555,11 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 
 						@Override
 						public void onSuccess(Object o) {
-							// TODO Auto-generated method stub
 							final String result = (String) o;
 							scrollOperate.this.runOnUiThread(new Runnable() {
 								
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									try {
 										JSONObject obj = new JSONObject(result);
 										int info = obj.getInt("msg");

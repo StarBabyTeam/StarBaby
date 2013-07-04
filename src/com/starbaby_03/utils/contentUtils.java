@@ -17,6 +17,7 @@ public class contentUtils {
 	public static String getPicIdUrl = "http://www.starbaby.cn/appApi/cameraApi/view_pic/" ;//单个照片展示
 	public static String replyPicUrl = "http://www.starbaby.cn/appApi/cameraApi/pic_comment_list/";//照片评论接口
 	public static String replyListUrl = "http://www.starbaby.cn/appApi/cameraApi/comment_pic";//照片评论/对评论回复接口
+	public static String addAlbumUrl = "http://www.starbaby.cn/appApi/cameraApi/create_album";//创建相册接口
 	
 	public static String headImgUrl="";
 	public static int uid=0;//用户头像外部UID

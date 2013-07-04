@@ -59,7 +59,7 @@ OnClickListener{
 			startActivity(new Intent(operatePic.this,mCamera.class));
 			break;
 		case R.id.camera_operatepic_ibnt2://保存
-			new savePhoto().saveJpeg(cameraUtils.bitmap);
+			showAlertDialog();
 			break;
 		case R.id.camera_operatepic_ibnt3://美化
 			try {
@@ -74,7 +74,14 @@ OnClickListener{
 			break;
 		case R.id.scroll_dialog_button1://保存 跳转到心情 界面
 			Intent intent = new Intent(this,scrollOperate.class);
+			intent.putExtra("scroll", "save");
 			startActivity(intent);
+			alert.dismiss();
+			break;
+		case R.id.scroll_dialog_button2:// 发布，跳转到心情 界面
+			Intent intent2 = new Intent(this,scrollOperate.class);
+			intent2.putExtra("scroll", "release");
+			startActivity(intent2);
 			alert.dismiss();
 			break;
 		}
