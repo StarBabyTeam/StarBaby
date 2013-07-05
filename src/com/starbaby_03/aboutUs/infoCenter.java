@@ -67,6 +67,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 	private List<View> list;
 	private View view1, view2;
 	private ImageButton iBnt1;
+	private ImageView iv1;
 	public static ArrayList<File> listFile;
 	private static ArrayList<aboutUsUtils> aboutUsUtils_list;
 	private int albumsize;// 线上返回的相册个数
@@ -313,13 +314,15 @@ public class infoCenter extends Activity implements IXListViewListener,
 		iBnt1.setOnClickListener(this);
 		tv3.setOnClickListener(this);
 		tv4.setOnClickListener(this);
+		iv1.setOnClickListener(this);
 	}
 
 	private void init() {
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_infocenter_ibnt1);
 		tv3 = (TextView) findViewById(R.id.aboutus_infocenter_tv3);
 		tv4 = (TextView) findViewById(R.id.aboutus_infocenter_tv4);
-		tv4.setText("/n"+"私密"+"/n"+"相册");
+		iv1 = (ImageView) findViewById(R.id.aboutus_infocenter_iv1);
+		tv4.setText("\n"+"私密"+"\n"+"相册");
 	}
 
 	// 第一次导入刷新
@@ -442,7 +445,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						tv3.setText(albumsize+"/n"+"个性"+"/n"+"晒图");
+						tv3.setText("   "+albumsize+"\n"+"个性"+"\n"+"晒图");
 						Log.e("aboutUsUtils_list.get(0).getAlbumid()=",aboutUsUtils_list.get(0).getAlbumid()+"");
 						gv.setAdapter(new MyGridView(infoCenter.this,
 								aboutUsUtils_list));
@@ -617,6 +620,9 @@ public class infoCenter extends Activity implements IXListViewListener,
 			break;
 		case R.id.aboutus_infocenter_tv4:
 			startActivity(new Intent(this,mapStorage.class));
+			break;
+		case R.id.aboutus_infocenter_iv1://点击头像查看信息
+			startActivity(new Intent(this,center.class));
 			break;
 		}
 	}

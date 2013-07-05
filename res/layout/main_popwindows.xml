@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="拍照"
+        android:background="@drawable/ct_tux"
         android:textSize="15dp" />
 	 <Button
         android:id="@+id/main_popwindows_button2"
@@ -16,6 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="选择本地图片"
+        android:background="@drawable/ct_tux"
         android:textSize="15dp" />
 	 <Button
         android:id="@+id/main_popwindows_button3"
@@ -23,5 +25,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="取消"
+        android:background="@drawable/ct_tux"
         android:textSize="15dp" />
 </LinearLayout>

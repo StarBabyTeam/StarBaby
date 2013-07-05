@@ -84,22 +84,8 @@ public class user_enter extends Activity implements OnClickListener {
 	private ImageView imgBnt1;
 	private CheckBox ck;
 	private String avatar = null;
-//	public Handler mHandler = new Handler() {
-//		@SuppressLint("NewApi")
-//		@Override
-//		public String getMessageName(Message message) {
-//			// TODO Auto-generated method stub
-//			message.what = 1;
-//			startActivity(new Intent(user_enter.this, PullDownActivity.class));
-//			progressbar.setVisibility(View.GONE);
-//			user_enter.this.finish();
-//			return super.getMessageName(message);
-//		}
-//
-//	};
 
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.info_enter);
@@ -109,7 +95,6 @@ public class user_enter extends Activity implements OnClickListener {
 	}
 
 	private void listener() {
-		// TODO Auto-generated method stub
 		Bnt1.setOnClickListener(this);
 		Bnt2.setOnClickListener(this);
 		info_enter_textview5.setOnClickListener(this);
@@ -118,7 +103,6 @@ public class user_enter extends Activity implements OnClickListener {
 			// @Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				// TODO Auto-generated method stub
 				if (ck.isChecked()) {
 					contentUtils.sp.edit().putBoolean("ISCHECK", true).commit();
 					contentUtils.sp.edit().putBoolean("AUTO_ISCHECK", true)
@@ -408,7 +392,7 @@ public class user_enter extends Activity implements OnClickListener {
 		case R.id.info_enter_imagebutton3:
 			Intent intent2 = new Intent(this, user_register.class);
 			startActivity(intent2);
-			this.finish();
+//			this.finish();
 			break;
 		case R.id.info_enter_imagebutton:
 			if (ck.isChecked()) {

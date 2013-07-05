@@ -70,16 +70,17 @@
 			    android:layout_alignParentTop="true"
 			    android:layout_marginTop="25dp"
 			    android:layout_alignParentLeft="true"
-			    android:layout_marginLeft="75dp"
+			    android:layout_marginLeft="80dp"
 			    android:textSize="10dp"></TextView>
         <TextView 
 			    android:id="@+id/aboutus_infocenter_tv4"
 			    android:layout_width="35dp"
 			    android:layout_height="35dp"
 			    android:layout_alignParentTop="true"
-			    android:layout_marginTop="40dp"
+			    android:layout_marginTop="35dp"
 			    android:layout_alignParentLeft="true"
-			    android:layout_marginLeft="155dp"></TextView>
+			    android:layout_marginLeft="160dp"
+			    android:textSize="10dp"></TextView>
     </RelativeLayout>
 	 <android.support.v4.view.ViewPager
         android:id="@+id/vPager"

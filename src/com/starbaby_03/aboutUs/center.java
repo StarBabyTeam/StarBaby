@@ -229,11 +229,11 @@ public class center extends Activity implements OnTouchListener,
 		Log.e("TAG", "click");
 		switch (v.getId()) {
 		case R.id.aboutus_center_imagebutton:
-			startActivity(new Intent(this, MainActivity.class));
 			this.finish();
 			break;
 		case R.id.aboutus_center_button1:
 			contentUtils.sp.edit().clear().commit();
+			contentUtils.spGetInfo.edit().clear().commit();
 			startActivity(new Intent(this, user_enter.class));
 			this.finish();
 			break;

@@ -3,6 +3,8 @@ package com.starbaby_03.share;
 import java.awt.List;
 import java.util.ArrayList;
 
+import javax.swing.text.LayeredHighlighter.LayerPainter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.Gallery.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -62,6 +65,7 @@ public class author extends Activity implements OnClickListener{
 	private String replies;
 	private Bitmap headBit,Bit;
 	private Handler mHandler = new Handler(){
+	
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -72,7 +76,7 @@ public class author extends Activity implements OnClickListener{
 			iv1.setImageBitmap(headBit);
 			headIv.setImageBitmap(Bit);
 			repliesTv.setText(replies+" "+"Ãı∆¿¬€");
-			lv.addHeaderView(picView);
+			lv.addHeaderView(picView );
 			loginReply(Integer.parseInt(ScrollUtils.picId),1);
 			Log.e("url=", Integer.parseInt(ScrollUtils.picId)+"");
 			
@@ -146,10 +150,6 @@ public class author extends Activity implements OnClickListener{
 			}
 		});
 		DefaultThreadPool.getInstance().execute(get);
-		
-		
-		
-		
 	}
 	int nextpage = 1;
     int currentpage = 0;

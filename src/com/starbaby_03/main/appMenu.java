@@ -24,16 +24,19 @@ import android.widget.ImageView;
 public class appMenu extends Activity{
 	private ImageView imageView;
 	@Override
+	/**
+	 *  commit:1
+	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.main_appmenu);
 		imageView=(ImageView) findViewById(R.id.imageview);
-		beautyUtils.spPic=getSharedPreferences("spPic", MODE_WORLD_READABLE);
-		contentUtils.sp = this.getSharedPreferences("enter", MODE_WORLD_READABLE);
-		contentUtils.spinfo = this.getSharedPreferences("userInfo",MODE_WORLD_READABLE);
-		contentUtils.spGetInfo	= this.getSharedPreferences("enterRecive", MODE_WORLD_READABLE)	;
+		beautyUtils.spPic=getSharedPreferences("spPic", MODE_WORLD_READABLE);//本地照片的描述
+		contentUtils.sp = this.getSharedPreferences("enter", MODE_WORLD_READABLE);//  记住密码的操作
+		contentUtils.spinfo = this.getSharedPreferences("userInfo",MODE_WORLD_READABLE);// 通过判断该app当前的用户，用来调用头像接口。在本地显示头像
+		contentUtils.spGetInfo	= this.getSharedPreferences("enterRecive", MODE_WORLD_READABLE)	;//登入获取的返回信息，用于后续操作
 		final Intent intent=new Intent(this,MainActivity.class);
 		Timer timer=new Timer();
 		TimerTask timerTask=new TimerTask() {

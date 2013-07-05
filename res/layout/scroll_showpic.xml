@@ -25,7 +25,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="5dp"
-            android:background="@drawable/imagebutton_back" >
+            android:background="@drawable/imagebutton_share" >
         </ImageButton>
     </RelativeLayout>
 

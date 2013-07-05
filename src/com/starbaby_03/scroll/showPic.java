@@ -1,6 +1,7 @@
 package com.starbaby_03.scroll;
 
 import com.example.starbaby_03.R;
+import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.beautyUtils;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ public class showPic extends Activity implements OnClickListener {
 	private ImageButton iBnt1, iBnt2;
 	private ImageView iv1;
 	private TextView tv1;
+	private String path;//单张图片的路径
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +39,14 @@ public class showPic extends Activity implements OnClickListener {
 	private void init() {
 		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt1);
-		iBnt2 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt1);
+		iBnt2 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt2);
 		iv1 = (ImageView) findViewById(R.id.srcoll_showpic_iv1);
 		tv1 = (TextView) findViewById(R.id.scroll_showpic_tv1);
 		getBitmap();
 	}
 	private void getBitmap(){
 		Intent intent= getIntent();
-		String path = intent.getStringExtra("mapShowMin2_url");
+		path = intent.getStringExtra("mapShowMin2_url");
 		Bitmap bitmap = BitmapFactory.decodeFile(path);
 		iv1.setImageBitmap(bitmap);
 		String text = "";
@@ -57,10 +59,14 @@ public class showPic extends Activity implements OnClickListener {
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
-		case R.id.scroll_showpic_ibnt1:
+		case R.id.scroll_showpic_ibnt1://返回
 			this.finish();
 			break;
-		case R.id.scroll_showpic_ibnt2:
+		case R.id.scroll_showpic_ibnt2://分享
+			Intent intent = new Intent(this,scrollOperate.class);
+			intent.putExtra("scroll", "release");
+			ScrollUtils.sharePath = path;
+			startActivity(intent);
 			break;
 		}
 	}

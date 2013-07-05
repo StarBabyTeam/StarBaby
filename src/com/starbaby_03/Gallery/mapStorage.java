@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.starbaby_03.R;
-import com.starbaby_03.Gallery.mapShowMin.Filter;
 import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.saveAndSearch.savePhoto;
@@ -175,16 +174,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 					path2.length());
 			Intent intent2 = new Intent(this, mapShowMin2.class);
 			intent2.putExtra("url", path2);
-			if (getIntent().getExtras().getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_sharePic_Flag) {
-				intent2.putExtra(weiboUtils.weibo_sharePic_key,
-						weiboUtils.weibo_sharePic_Flag);
-			} else if (getIntent().getExtras()
-					.getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_showPic_Flag) {
-				intent2.putExtra(weiboUtils.weibo_sharePic_key,
-						weiboUtils.weibo_showPic_Flag);
-			}
 			startActivity(intent2);
-			this.finish();
 		}
 	}
 
@@ -239,8 +229,6 @@ public class mapStorage extends Activity implements OnItemClickListener,
 		switch (v.getId()) {
 		case R.id.gallery_mapstorage_imagebutton1:
 			mapStorage.this.finish();
-			Intent intent2 = new Intent(this, MainActivity.class);
-			startActivity(intent2);
 			break;
 		}
 	}

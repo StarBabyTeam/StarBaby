@@ -21,4 +21,5 @@ public class ScrollUtils {
 	public static final int info_add5 = 5;
 	
 	public static String picId;//单张照片的uid
+	public static String sharePath;// 分享图片的本地url
 }

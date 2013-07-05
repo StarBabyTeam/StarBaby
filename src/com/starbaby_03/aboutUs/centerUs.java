@@ -69,7 +69,7 @@ public class centerUs extends Activity implements OnClickListener {
 	private String sex = null;
 	private String avatar = null;
 	private Bitmap headbit;
-	private String picPath = null;
+	private String picPath = saveFile.headName;
 	private String contentUrl;
 	private String customid;
 	private Handler mHandler = new Handler(){
@@ -160,26 +160,35 @@ public class centerUs extends Activity implements OnClickListener {
 			startActivity(new Intent(centerUs.this, center.class));
 			centerUs.this.finish();
 			break;
-		case R.id.aboutus_centerus_imagebutton2:
+		case R.id.aboutus_centerus_imagebutton2://修改头像
 			// 密码进行MD5加密
 			if(contentUtils.psw==null){
 				Toast.makeText(centerUs.this, "请先登录", 1000).show();
 			}
-			String enPwd = EncodeUtil.getMD5(contentUtils.psw.getBytes());
-			File file = new File(picPath);
+			final String enPwd = EncodeUtil.getMD5(contentUtils.psw.getBytes());
+			final File file = new File(picPath);
 			if (file != null) {
-				String request = UploadUtil.uploadFile(file,
-						contentUtils.registerImgUrl);
-				// json解析获取的url
-				try {
-					contentUrl = new JsonObject()
-							.getIMAGEURl(request);
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Log.e("uid=", contentUtils.uid+"");
-				changeHeadImg(contentUtils.uid,enPwd,contentUrl);
+				Thread thread = new Thread(){
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						super.run();
+						String request = UploadUtil.uploadFile(file,
+								contentUtils.registerImgUrl);
+						// json解析获取的url
+						try {
+							contentUrl = new JsonObject()
+									.getIMAGEURl(request);
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						Log.e("uid=", contentUtils.uid+"");
+						changeHeadImg(contentUtils.uid,enPwd,contentUrl);
+					}
+				};
+				thread.start();
 			}
 			break;
 		case R.id.aboutus_centerus_imageview2:
@@ -325,7 +334,7 @@ public class centerUs extends Activity implements OnClickListener {
 	public void changeHeadImg(int uid, String psw, String url) {
 
 		List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
-		parameterList.add(new RequestParameter("uid", uid));
+		parameterList.add(new RequestParameter("uid", uid+""));
 		parameterList.add(new RequestParameter("pwd", psw));
 		parameterList.add(new RequestParameter("avatar", url));
 		AsyncHttpPost httppost = new AsyncHttpPost(null, contentUtils.changeImgUrl
@@ -334,7 +343,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 					@Override
 					public void onSuccess(Object o) {
-						// TODO Auto-generated method stub
 						final String result = (String) o;
 						customid = result.replace("\"", " ");
 						MyData.getInstance().setCustomerid(customid);
@@ -345,6 +353,7 @@ public class centerUs extends Activity implements OnClickListener {
 								// TODO Auto-generated method stub
 								String msg = result;
 								Log.e("msg=", result);
+								Toast.makeText(centerUs.this, "保存成功", 1000).show();
 							}
 						});
 					}

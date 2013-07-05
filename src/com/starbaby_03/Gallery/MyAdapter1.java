@@ -42,14 +42,10 @@ public class MyAdapter1 extends BaseAdapter {
 		context=ct;
 		pList=list;
 		mInflater=LayoutInflater.from(context);
-//		for (int i = 0; i < pList.size(); i++) {
-//			mapList.add(BitmapFactory.decodeResource(ct.getResources(), Integer.parseInt(list.get(i))));
-			mImage_bs.add(false);
-//		}
+		mImage_bs.add(false);
 	}
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		if(pList!=null)
 			return pList.size();
 		else
@@ -58,7 +54,6 @@ public class MyAdapter1 extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		// TODO Auto-generated method stub
 		if(pList!=null)
 			return pList.get(position);
 		else
@@ -81,17 +76,9 @@ public class MyAdapter1 extends BaseAdapter {
 		}
 		ESImageView ivMain = (ESImageView) convertView
 				.findViewById(R.id.ivshow);
-//		ImageView ivSelect = (ImageView) convertView
-//				.findViewById(R.id.imageview_ivSelect);
 		ivMain.setScaleType(ScaleType.CENTER);
 		ivMain.invalidate();
 		ivMain.setImageUrl(getItem(position).toString());
-		currentFlag=mapShowMin.Flag;
-//		if (currentFlag==false)
-//			ivSelect.setImageResource(R.drawable.btncheck_no);
-//		else {
-//			ivSelect.setImageResource(R.drawable.btncheck_yes);
-//		}
 		return convertView;
 	}
 	private String getName(String path){

@@ -6,7 +6,6 @@ import java.io.FileFilter;
 import android.util.Log;
 
 import com.starbaby_03.Gallery.mapStorage;
-import com.starbaby_03.Gallery.mapShowMin.Filter;
 import com.starbaby_03.aboutUs.infoCenter;
 import com.starbaby_03.scroll.scrollOperate;
 

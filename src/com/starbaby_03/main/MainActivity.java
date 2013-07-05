@@ -808,5 +808,8 @@ public class MainActivity extends FragmentActivity implements
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
+	public void onBackPressed(){
+		super.onBackPressed();
+		this.finish();
+	}
 }

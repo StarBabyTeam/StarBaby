@@ -31,6 +31,6 @@ public class contentUtils {
 	public static String psw=null;
 	
 	public static SharedPreferences sp=null;//记住登入：保存密码和账号
-	public static SharedPreferences spinfo=null;//记住个人信息
+	public static SharedPreferences spinfo=null;
 	public static SharedPreferences spGetInfo = null;//登入后 接口反馈的个人信息
 }
