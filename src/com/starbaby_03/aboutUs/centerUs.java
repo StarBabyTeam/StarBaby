@@ -12,7 +12,6 @@ import org.json.JSONException;
 import com.example.starbaby_03.R;
 import com.starbaby_03.Gallery.mapStorage;
 import com.starbaby_03.info.user_enter;
-import com.starbaby_03.main.appMain;
 import com.starbaby_03.net.AsyncHttpPost;
 import com.starbaby_03.net.DefaultThreadPool;
 import com.starbaby_03.net.RequestParameter;

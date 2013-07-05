@@ -15,7 +15,7 @@ import java.util.TimerTask;
 import com.example.starbaby_03.R;
 import com.starbaby_03.beautify.addFrame;
 import com.starbaby_03.beautify.addWords;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.beautyUtils;
@@ -248,7 +248,7 @@ public class scroll extends Activity implements OnTouchListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.RetureBnt:
-			Intent intent5 = new Intent(scroll.this, appMain.class);
+			Intent intent5 = new Intent(scroll.this, MainActivity.class);
 			startActivity(intent5);
 			this.finish();
 			break;

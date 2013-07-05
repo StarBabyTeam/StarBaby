@@ -14,7 +14,7 @@ import java.util.Map;
 import com.example.starbaby_03.R;
 import com.starbaby_03.Gallery.mapShowMin.Filter;
 import com.starbaby_03.camera.mCamera;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.saveAndSearch.serach;
 import com.starbaby_03.utils.galleryUtils;
@@ -239,7 +239,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 		switch (v.getId()) {
 		case R.id.gallery_mapstorage_imagebutton1:
 			mapStorage.this.finish();
-			Intent intent2 = new Intent(this, appMain.class);
+			Intent intent2 = new Intent(this, MainActivity.class);
 			startActivity(intent2);
 			break;
 		}
@@ -328,7 +328,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 	public void onBackPressed() {
 		super.onBackPressed();
 		mapStorage.this.finish();
-		Intent intent = new Intent(this, appMain.class);
+		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
 

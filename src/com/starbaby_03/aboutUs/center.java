@@ -20,7 +20,7 @@ import org.json.JSONObject;
 import com.example.starbaby_03.R;
 import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.info.user_enter;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.net.AsyncHttpPost;
 import com.starbaby_03.net.DefaultThreadPool;
 import com.starbaby_03.net.RequestParameter;
@@ -35,7 +35,6 @@ import com.starbaby_03.utils.meshImgUrl;
 import com.starbaby_03.utils.weiboUtils;
 import com.starbaby_03.view.CircleImageView;
 import com.starbaby_03.view.TextviewView;
-import com.starbaby_03.weibo.PullDownActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -230,7 +229,7 @@ public class center extends Activity implements OnTouchListener,
 		Log.e("TAG", "click");
 		switch (v.getId()) {
 		case R.id.aboutus_center_imagebutton:
-			startActivity(new Intent(this, appMain.class));
+			startActivity(new Intent(this, MainActivity.class));
 			this.finish();
 			break;
 		case R.id.aboutus_center_button1:
@@ -244,7 +243,7 @@ public class center extends Activity implements OnTouchListener,
 	public void onBackPressed() {
 		// TODO Auto-generated method stub
 		super.onBackPressed();
-		startActivity(new Intent(this, appMain.class));
+		startActivity(new Intent(this, MainActivity.class));
 		this.finish();
 	}
 

@@ -15,7 +15,7 @@ import com.example.starbaby_03.R;
 import com.starbaby_03.aboutUs.DBSharedPreference;
 import com.starbaby_03.aboutUs.center;
 import com.starbaby_03.aboutUs.infoCenter;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.net.AsyncHttpGet;
 import com.starbaby_03.net.AsyncHttpPost;
 import com.starbaby_03.net.DefaultThreadPool;
@@ -28,7 +28,6 @@ import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.contentUtils;
 import com.starbaby_03.utils.weiboUtils;
 import com.starbaby_03.view.CircleImageView;
-import com.starbaby_03.weibo.PullDownActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -85,19 +84,19 @@ public class user_enter extends Activity implements OnClickListener {
 	private ImageView imgBnt1;
 	private CheckBox ck;
 	private String avatar = null;
-	public Handler mHandler = new Handler() {
-		@SuppressLint("NewApi")
-		@Override
-		public String getMessageName(Message message) {
-			// TODO Auto-generated method stub
-			message.what = 1;
-			startActivity(new Intent(user_enter.this, PullDownActivity.class));
-			progressbar.setVisibility(View.GONE);
-			user_enter.this.finish();
-			return super.getMessageName(message);
-		}
-
-	};
+//	public Handler mHandler = new Handler() {
+//		@SuppressLint("NewApi")
+//		@Override
+//		public String getMessageName(Message message) {
+//			// TODO Auto-generated method stub
+//			message.what = 1;
+//			startActivity(new Intent(user_enter.this, PullDownActivity.class));
+//			progressbar.setVisibility(View.GONE);
+//			user_enter.this.finish();
+//			return super.getMessageName(message);
+//		}
+//
+//	};
 
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -423,7 +422,7 @@ public class user_enter extends Activity implements OnClickListener {
 
 	public void onBackPressed() {
 		super.onBackPressed();
-		startActivity(new Intent(user_enter.this, appMain.class));
+		startActivity(new Intent(user_enter.this, MainActivity.class));
 		user_enter.this.finish();
 	}
 }

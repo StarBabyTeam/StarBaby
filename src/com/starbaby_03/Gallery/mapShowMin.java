@@ -10,7 +10,6 @@ import com.example.starbaby_03.R;
 import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.utils.galleryUtils;
 import com.starbaby_03.utils.weiboUtils;
-import com.starbaby_03.weibo.shareBaby;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -189,25 +188,25 @@ public class mapShowMin extends Activity implements OnItemClickListener,
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int position,
 			long arg3) {
-		// TODO Auto-generated method stub
-		weiboUtils.pathList_1 = pathList;
-		String url = pathList.get(position).toString();
-		Intent intent = null;
-		weiboUtils.weibo_picUrl = url;
-		galleryUtils.position = position;
-		if (getIntent().getExtras().getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_sharePic_Flag) {
-			// 直接返回晒图
-			intent = new Intent(this, shareBaby.class);
-			intent.putExtra(weiboUtils.weibo_sharePic_key,
-					weiboUtils.weibo_sharePic_Flag);
-			intent.putExtra(weiboUtils.weibo_return_key,
-					weiboUtils.weibo_return_Flag);
-		} else if (getIntent().getExtras()
-				.getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_showPic_Flag) {
-			// 显示原图片
-			intent = new Intent(this, mapShowOrginal.class);
-		}
-		startActivity(intent);
+//		// TODO Auto-generated method stub
+//		weiboUtils.pathList_1 = pathList;
+//		String url = pathList.get(position).toString();
+//		Intent intent = null;
+//		weiboUtils.weibo_picUrl = url;
+//		galleryUtils.position = position;
+//		if (getIntent().getExtras().getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_sharePic_Flag) {
+//			// 直接返回晒图
+//			intent = new Intent(this, shareBaby.class);
+//			intent.putExtra(weiboUtils.weibo_sharePic_key,
+//					weiboUtils.weibo_sharePic_Flag);
+//			intent.putExtra(weiboUtils.weibo_return_key,
+//					weiboUtils.weibo_return_Flag);
+//		} else if (getIntent().getExtras()
+//				.getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_showPic_Flag) {
+//			// 显示原图片
+//			intent = new Intent(this, mapShowOrginal.class);
+//		}
+//		startActivity(intent);
 		this.finish();
 	}
 }
