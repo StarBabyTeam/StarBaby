@@ -132,7 +132,6 @@ public class author extends Activity implements OnClickListener{
 									lv.setAdapter(adapter);
 									lv.setOnScrollListener(new ScrollListener());
 								} catch (JSONException e) {
-									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
