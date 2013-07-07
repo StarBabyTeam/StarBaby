@@ -48,16 +48,15 @@
                 android:layout_height="30dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:background="@drawable/app" >
+                 >
             </ImageView>
 
             <TextView
-                android:id="@+id/aboutus_infocenter"
+                android:id="@+id/aboutus_infocenter_tv5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/aboutus_infocenter_iv1"
                 android:layout_marginTop="2dp"
-                android:text="星宝宝star"
                 android:layout_alignParentLeft="true"
                 android:layout_marginLeft="5dp"
                 android:textSize="10dp" >

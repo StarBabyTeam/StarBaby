@@ -115,7 +115,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 			Log.e("data=", data+"");
 		}
 		item2.put("ItemText", "Ìí¼ÓĞÂÕÕÆ¬");
-		item2.put("ItemTitle", R.drawable.appmain_takephoto);
+		item2.put("ItemTitle", R.drawable.empty_photo);
 		data.add(item2);
 		Log.e("data2=", data+"");
 		return data;

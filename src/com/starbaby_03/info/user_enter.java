@@ -286,6 +286,7 @@ public class user_enter extends Activity implements OnClickListener {
 									if (contentUtils.msg == 1) {
 										contentUtils.psw = editText2.getText()
 												.toString();
+										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
 										contentUtils.uid = new JsonObject()
 												.getUID(result);
 										contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();
@@ -304,10 +305,7 @@ public class user_enter extends Activity implements OnClickListener {
 												.putString("avatar",
 														contentUtils.avatar)
 												.commit();
-										Log.i("json", contentUtils.msg + ":"
-												+ contentUtils.uid + ":"
-												+ contentUtils.username + ":"
-												+ contentUtils.avatar + ":");
+										contentUtils.spGetInfo.edit().putString("avatar", contentUtils.avatar).commit();
 										Intent intent = new Intent(
 												user_enter.this,
 												infoCenter.class);

@@ -248,8 +248,6 @@ public class scroll extends Activity implements OnTouchListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.RetureBnt:
-			Intent intent5 = new Intent(scroll.this, MainActivity.class);
-			startActivity(intent5);
 			this.finish();
 			break;
 		case R.id.SaveBnt://保存或者分享

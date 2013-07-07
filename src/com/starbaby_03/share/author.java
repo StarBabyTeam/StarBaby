@@ -62,14 +62,14 @@ public class author extends Activity implements OnClickListener{
 	private String author;
 	private String avatar;
 	private String picurl;
-	private String replies;
+	private String replies;//总回复数
+	public  int totalPage;
+	private int page;
 	private Bitmap headBit,Bit;
 	private Handler mHandler = new Handler(){
-	
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			if(msg.what == 3)
 			tv1.setText(author);
@@ -77,26 +77,23 @@ public class author extends Activity implements OnClickListener{
 			headIv.setImageBitmap(Bit);
 			repliesTv.setText(replies+" "+"条评论");
 			lv.addHeaderView(picView );
+			page = 1;//初始化页数为1，可返回回复数为0
+			float onePage = 10;
+			totalPage = (int) Math.ceil(((float)Integer.parseInt(replies))/onePage);//一共返回几页
+			Log.e("replies=", replies+"");
+			Log.e("totalPage2=", totalPage+"");
 			loginReply(Integer.parseInt(ScrollUtils.picId),1);
 			Log.e("url=", Integer.parseInt(ScrollUtils.picId)+"");
-			
 		}
 		
 	};
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.share_authorlist);
 		init();
 		listener();
 	}
-	// 自动刷新
-//	protected void onResume() {
-//		super.onResume();
-//		loginReply(Integer.parseInt(ScrollUtils.picId), 1);
-//		lv.setOnScrollListener(new ScrollListener());
-//	}
 	void loginReply(int picid,int page){
 		final ArrayList<String> authorList = new ArrayList<String>();
 		final ArrayList<String> avatarList = new ArrayList<String>();
@@ -109,10 +106,10 @@ public class author extends Activity implements OnClickListener{
 				final String result = (String) o;
 				author.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Log.e("result2=", result);
 								try {
 									JSONObject json = new JSONObject(result);
 									int pagesize = json.getInt("pagesize");// 当前返回页面的评论条数
+									Log.e("pagesize=", pagesize+"");
 									JSONArray datalist = json
 											.getJSONArray("datalist");
 									for (int i = 0; i < datalist.length(); i++) {
@@ -134,7 +131,9 @@ public class author extends Activity implements OnClickListener{
 									}
 									adapter = new MyAdapter(author.this,list);
 									lv.setAdapter(adapter);
-									lv.setOnScrollListener(new ScrollListener());
+									if(pagesize > 10){//回复数大于10，可以发送请求下一页
+										lv.setOnScrollListener(new ScrollListener());
+									}
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -152,9 +151,9 @@ public class author extends Activity implements OnClickListener{
 		DefaultThreadPool.getInstance().execute(get);
 	}
 	int nextpage = 1;
-    int currentpage = 0;
+    int currentpage = 1;
     private final class ScrollListener implements OnScrollListener{
-    	private int number = 10;
+    	private int number = 10;//每次请求发回回复数最大条目
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
 			Log.e("Test", "onScrollStateChanged(scrollState="+ scrollState + ")");
@@ -166,25 +165,28 @@ public class author extends Activity implements OnClickListener{
 			Log.e("Test", "onScroll(firstVisibleItem="+ firstVisibleItem+
 					"visibleItemCount="+visibleItemCount+ "totalItemCount="+totalItemCount + ")");
 			//listView.getLastVisiblePosition()
-			if(firstVisibleItem + visibleItemCount == totalItemCount){//下一页
-				if(totalItemCount>0) nextpage = totalItemCount / number + 1;
-				Log.e("nextpage=", nextpage+"");
-				if(currentpage!=nextpage){
-					lv.addFooterView(loadingView);//显示数据正在加载
-					//开线程{得到数据，然后发送消息}
-					handler.sendMessageDelayed(handler.obtainMessage(1, totalItemCount), 3000);
-					currentpage = nextpage;
-				}
+//			if(firstVisibleItem + visibleItemCount == totalItemCount){//下一页
+//				if(totalItemCount>0) nextpage = totalItemCount / number + 1;
+//				Log.e("nextpage=", nextpage+"");
+//				if(currentpage!=nextpage){
+//					lv.addFooterView(loadingView);//显示数据正在加载
+//					//开线程{得到数据，然后发送消息}
+//					handler.sendMessageDelayed(handler.obtainMessage(1, totalItemCount), 3000);
+//					currentpage = nextpage;
+//				}
+//			}
+			Log.e("totalPage=", totalPage+"");
+			if(currentpage < totalPage){
+				lv.addFooterView(loadingView);//显示数据正在加载
+				currentpage = currentpage+1;
+				handler.sendMessageDelayed(handler.obtainMessage(1, totalItemCount), 3000);
 			}
+			
 		}
     }
     
     Handler handler = new Handler(){
 		public void handleMessage(Message msg) {
-//			author_list list6 = new author_list(R.drawable.add_in, "wangva3", "3", "2012");
-//			author_list list7 = new author_list(R.drawable.add_in, "wangva3", "wagba", "2012");
-//			list.add(list6);
-//			list.add(list7);
 			loginReply(Integer.parseInt(ScrollUtils.picId),currentpage);
 			adapter.notifyDataSetChanged();
 			lv.removeFooterView(loadingView);//当数据加载完后，删除提示
@@ -213,13 +215,11 @@ public class author extends Activity implements OnClickListener{
 			
 			@Override
 			public void onSuccess(Object o) {
-				// TODO Auto-generated method stub
 				final String result = (String)o;
 				author.this.runOnUiThread(new Runnable() {
 				
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
 						try {
 							JSONObject json = new JSONObject(result);
 							JSONObject datalist = json.getJSONObject("datalist");
@@ -232,7 +232,6 @@ public class author extends Activity implements OnClickListener{
 
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									super.run();
 									Message msg = new Message();
 									msg.what = 3;
@@ -280,7 +279,6 @@ public class author extends Activity implements OnClickListener{
 
 			@Override
 			public void handleMessage(Message msg) {
-				// TODO Auto-generated method stub
 				super.handleMessage(msg);
 				if(msg.what == 2)
 					headIv.setImageBitmap(bitmap);
@@ -310,7 +308,6 @@ public class author extends Activity implements OnClickListener{
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
 			convertView = getLayoutInflater().inflate(R.layout.share_authorlist_view, null);
 			headIv = (ImageView)convertView. findViewById(R.id.share_authorlist_view_iv1);
 			noteTv = (TextView)convertView. findViewById(R.id.share_authorlist_view_tv1);

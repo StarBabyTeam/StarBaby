@@ -55,7 +55,7 @@
            android:layout_height="40dp"
            android:layout_centerHorizontal="true"
            android:layout_below="@+id/popcamera_imgBnt2"
-           android:src="@drawable/btn_maininterface_returnhome_a"
+           android:src="@drawable/camera_lens_item_bg_over"
            android:visibility="invisible"></ImageButton>
    </RelativeLayout>
 
