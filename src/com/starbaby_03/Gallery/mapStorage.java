@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.starbaby_03.R;
-import com.starbaby_03.Gallery.mapShowMin.Filter;
 import com.starbaby_03.camera.mCamera;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.saveAndSearch.serach;
 import com.starbaby_03.utils.galleryUtils;
@@ -116,7 +115,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 			Log.e("data=", data+"");
 		}
 		item2.put("ItemText", "Ìí¼ÓÐÂÕÕÆ¬");
-		item2.put("ItemTitle", R.drawable.appmain_takephoto);
+		item2.put("ItemTitle", R.drawable.empty_photo);
 		data.add(item2);
 		Log.e("data2=", data+"");
 		return data;
@@ -175,16 +174,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 					path2.length());
 			Intent intent2 = new Intent(this, mapShowMin2.class);
 			intent2.putExtra("url", path2);
-			if (getIntent().getExtras().getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_sharePic_Flag) {
-				intent2.putExtra(weiboUtils.weibo_sharePic_key,
-						weiboUtils.weibo_sharePic_Flag);
-			} else if (getIntent().getExtras()
-					.getInt(weiboUtils.weibo_sharePic_key) == weiboUtils.weibo_showPic_Flag) {
-				intent2.putExtra(weiboUtils.weibo_sharePic_key,
-						weiboUtils.weibo_showPic_Flag);
-			}
 			startActivity(intent2);
-			this.finish();
 		}
 	}
 
@@ -239,8 +229,6 @@ public class mapStorage extends Activity implements OnItemClickListener,
 		switch (v.getId()) {
 		case R.id.gallery_mapstorage_imagebutton1:
 			mapStorage.this.finish();
-			Intent intent2 = new Intent(this, appMain.class);
-			startActivity(intent2);
 			break;
 		}
 	}
@@ -328,7 +316,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 	public void onBackPressed() {
 		super.onBackPressed();
 		mapStorage.this.finish();
-		Intent intent = new Intent(this, appMain.class);
+		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
 

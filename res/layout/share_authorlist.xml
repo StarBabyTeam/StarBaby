@@ -1,7 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
+    android:layout_height="fill_parent" >
 
     <RelativeLayout
         android:id="@+id/share_authorlist_rl1"
@@ -34,41 +33,48 @@
             android:layout_height="40dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5dp"
-             >
+            android:layout_marginRight="5dp" >
         </ImageView>
     </RelativeLayout>
-	<ListView 
-	    android:layout_below="@+id/share_authorlist_rl1"
-	    android:layout_above="@+id/share_authorlist_rl2"
-	    android:id="@+id/share_authorlist_lv1"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent"></ListView>
-	<RelativeLayout
-	    android:id="@+id/share_authorlist_rl2"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
-	    android:background="@drawable/bottom"
-	    android:layout_alignParentBottom="true"
-	    >
-	    <EditText 
-	        android:id="@+id/share_authorlist_et1"
-	        android:text=""
-	        android:textSize="10dp"
-	        android:layout_height="wrap_content"
-	        android:layout_width="fill_parent"
-	        android:layout_marginLeft="50dp"
-	        android:layout_marginRight="70dp"
-	        android:layout_marginTop="5dp"
-	        android:layout_marginBottom="5dp"
-	        ></EditText>
-	    <ImageButton
-	        android:id="@+id/share_authorlist_ibnt3"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:background="@drawable/imagebutton_finish"
-	        android:layout_centerVertical="true"
-	        android:layout_alignParentRight="true"
-	        android:layout_marginRight="10dp"></ImageButton>"
-	</RelativeLayout>"
+
+    <ListView
+        android:id="@+id/share_authorlist_lv1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/share_authorlist_rl2"
+        android:layout_below="@+id/share_authorlist_rl1" >
+    </ListView>
+
+    <RelativeLayout
+        android:id="@+id/share_authorlist_rl2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/bottom" >
+
+        <EditText
+            android:id="@+id/share_authorlist_et1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="70dp"
+            android:layout_marginTop="5dp"
+            android:text=""
+            android:textSize="10dp" >
+        </EditText>
+
+        <ImageButton
+            android:id="@+id/share_authorlist_ibnt3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/imagebutton_finish" >
+        </ImageButton>
+
+    </RelativeLayout>
+
+
 </RelativeLayout>

@@ -151,8 +151,8 @@ public class user_register extends Activity implements OnClickListener,
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.info_register_imagebutton1:
-			Intent intent = new Intent(this, user_enter.class);
-			startActivity(intent);
+//			Intent intent = new Intent(this, user_enter.class);
+//			startActivity(intent);
 			this.finish();
 			break;
 		case R.id.info_register_imagebutton2:
@@ -273,9 +273,9 @@ public class user_register extends Activity implements OnClickListener,
 								try {
 									contentUtils.msg = new JsonObject().getMSG(result);
 									if(contentUtils.msg==1){
-										Intent intent2 = new Intent(user_register.this,
-												user_enter.class);
-										startActivity(intent2);
+//										Intent intent2 = new Intent(user_register.this,
+//												user_enter.class);
+//										startActivity(intent2);
 										user_register.this.finish();
 										contentUtils.spinfo.edit().putString("sex", userSex)
 												.commit();

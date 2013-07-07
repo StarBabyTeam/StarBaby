@@ -67,6 +67,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 	private List<View> list;
 	private View view1, view2;
 	private ImageButton iBnt1;
+	private ImageView iv1;
 	public static ArrayList<File> listFile;
 	private static ArrayList<aboutUsUtils> aboutUsUtils_list;
 	private int albumsize;// 线上返回的相册个数
@@ -81,10 +82,22 @@ public class infoCenter extends Activity implements IXListViewListener,
 	private String currentUrl = "";// 当前操作 推送的接口
 	private String shortUrl = "";
 	public ArrayList<HotInfo> duitangs;
-	private int new_current_page_down = 1;//最新 ：当前页面，用于下拉，向接口获取数据。
-	private int new_current_page_up = 1;//最新 ：当前页面，用于上拉，向接口获取数据。
-	private TextView tv3,tv4;
+	private int new_current_page_down = 1;// 最新 ：当前页面，用于下拉，向接口获取数据。
+	private int new_current_page_up = 1;// 最新 ：当前页面，用于上拉，向接口获取数据。
+	private TextView tv3, tv4,tv5;
 	private int FLAG = 1;
+	private Bitmap bit;
+	private Handler handler = new Handler(){
+
+		@Override
+		public void handleMessage(Message msg) {
+			// TODO Auto-generated method stub
+			super.handleMessage(msg);
+			if(msg.what == 2)
+				iv1.setImageBitmap(bit);	
+		}
+	};
+
 	/**
 	 * 相册下的图片读取
 	 * 
@@ -117,11 +130,11 @@ public class infoCenter extends Activity implements IXListViewListener,
 				mAdapter.addItemTop(result);
 				mAdapter.notifyDataSetChanged();
 				mAdapterView.stopRefresh();
-			} else if (mType == 2) {//加载更多
+			} else if (mType == 2) {// 加载更多
 				mAdapterView.stopLoadMore();
 				mAdapter.addItemLast(result);
 				mAdapter.notifyDataSetChanged();
-			} else if(mType == 3){//refresh
+			} else if (mType == 3) {// refresh
 				mAdapterView.stopLoadMore();
 				mAdapter.addItemRefresh(result);
 				mAdapter.notifyDataSetChanged();
@@ -170,7 +183,8 @@ public class infoCenter extends Activity implements IXListViewListener,
 						info.setCommentList(commentList);
 						info.setIsrc(imgObject.isNull("img") ? "" : imgObject
 								.getString("img"));
-						info.setPicId(imgObject.isNull("picid") ? "" : imgObject.getString("picid"));
+						info.setPicId(imgObject.isNull("picid") ? ""
+								: imgObject.getString("picid"));
 						info.setHeight(170);
 						duitangs.add(info);
 					}
@@ -190,10 +204,10 @@ public class infoCenter extends Activity implements IXListViewListener,
 	 * @param type
 	 *            1为下拉刷新 2为加载更多
 	 */
-	private void AddItemToContainer(int pageindex, int type,int page) {
+	private void AddItemToContainer(int pageindex, int type, int page) {
 		if (task.getStatus() != Status.RUNNING) {
 			// 接口地址
-			String url = shortUrl+page;
+			String url = shortUrl + page;
 			ContentTask task = new ContentTask(this, type);
 			Log.e("url=", url);
 			task.execute(url);
@@ -271,24 +285,23 @@ public class infoCenter extends Activity implements IXListViewListener,
 		public long getItemId(int arg0) {
 			return 0;
 		}
-		public void addItemRefresh(List<HotInfo> datas){
-			if(FLAG == 2){
+
+		public void addItemRefresh(List<HotInfo> datas) {
+			if (FLAG == 2) {
 				mInfos.clear();
 				mInfos.addAll(datas);
-			}else if(FLAG == 1){
+			} else if (FLAG == 1) {
 				mInfos.addAll(datas);
 				mInfos.clear();
 			}
-			
+
 		}
+
 		public void addItemLast(List<HotInfo> datas) {
 			mInfos.addAll(datas);
 		}
 
 		public void addItemTop(List<HotInfo> datas) {
-//			for (HotInfo info : datas) {
-//				mInfos.addFirst(info);
-//			}
 			mInfos.clear();
 			mInfos.addAll(datas);
 		}
@@ -313,13 +326,29 @@ public class infoCenter extends Activity implements IXListViewListener,
 		iBnt1.setOnClickListener(this);
 		tv3.setOnClickListener(this);
 		tv4.setOnClickListener(this);
+		iv1.setOnClickListener(this);
 	}
 
 	private void init() {
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_infocenter_ibnt1);
 		tv3 = (TextView) findViewById(R.id.aboutus_infocenter_tv3);
 		tv4 = (TextView) findViewById(R.id.aboutus_infocenter_tv4);
-		tv4.setText("/n"+"私密"+"/n"+"相册");
+		tv5 = (TextView) findViewById(R.id.aboutus_infocenter_tv5);
+		iv1 = (ImageView) findViewById(R.id.aboutus_infocenter_iv1);//用户头像
+		Thread thread2 = new Thread(){
+
+			@Override
+			public void run() {
+				super.run();
+				Message msg = new Message();
+				msg.what = 2;
+				bit = new meshImgUrl().returnBitMap(contentUtils.spGetInfo.getString("avatar", ""));
+				handler.sendMessage(msg);
+			}
+		};
+		thread2.start();
+		tv5.setText(contentUtils.spGetInfo.getString("username", ""));
+		tv4.setText("\n" + "私密" + "\n" + "相册");
 	}
 
 	// 第一次导入刷新
@@ -328,56 +357,62 @@ public class infoCenter extends Activity implements IXListViewListener,
 		super.onResume();
 		mImageFetcher.setExitTasksEarly(false);
 		mAdapterView.setAdapter(mAdapter);
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(infoCenter.this,author.class));
-			}
-		});
+		mAdapterView
+				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(PLA_AdapterView<?> parent,
+							View view, int position, long id) {
+						ScrollUtils.picId = duitangs.get(position - 1)
+								.getPicId();
+						startActivity(new Intent(infoCenter.this, author.class));
+					}
+				});
 		int new_current_page = 1;
-		AddItemToContainer(currentPage, 3,new_current_page);
+		AddItemToContainer(currentPage, 3, new_current_page);
 	}
 
 	// 下拉刷新
 	@Override
 	public void onRefresh() {
 		new_current_page_down = 1;
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(infoCenter.this,author.class));
-			}
-		});
-		AddItemToContainer(++currentPage, 1,new_current_page_down);
+		mAdapterView
+				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(PLA_AdapterView<?> parent,
+							View view, int position, long id) {
+						ScrollUtils.picId = duitangs.get(position - 1)
+								.getPicId();
+						startActivity(new Intent(infoCenter.this, author.class));
+					}
+				});
+		AddItemToContainer(++currentPage, 1, new_current_page_down);
 	}
 
 	// 上拉加载
 	@Override
 	public void onLoadMore() {
-		new_current_page_up = new_current_page_up+1;
-		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(PLA_AdapterView<?> parent, View view,
-					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
-				startActivity(new Intent(infoCenter.this,author.class));
-			}
-		});
+		new_current_page_up = new_current_page_up + 1;
+		mAdapterView
+				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(PLA_AdapterView<?> parent,
+							View view, int position, long id) {
+						ScrollUtils.picId = duitangs.get(position - 1)
+								.getPicId();
+						startActivity(new Intent(infoCenter.this, author.class));
+					}
+				});
 		AddItemToContainer(++currentPage, 2, new_current_page_up);
 	}
 
 	private void InitViewPager() {
 		inflateGrideView();
-		
-		view2 = inflate.inflate(R.layout.main_lay1, null);//用来展示图片
+
+		view2 = inflate.inflate(R.layout.main_lay1, null);// 用来展示图片
 		mAdapterView = (XListView) view2.findViewById(R.id.list1);
 		mAdapterView.setPullLoadEnable(true);
 		mAdapterView.setXListViewListener(this);
-		
+
 		mAdapter = new StaggeredAdapter(this, mAdapterView);
 		mImageFetcher = new ImageFetcher(this, 240);
 		mImageFetcher.setLoadingImage(R.drawable.empty_photo);
@@ -387,13 +422,13 @@ public class infoCenter extends Activity implements IXListViewListener,
 		list.add(view1);
 		list.add(view2);
 		pager.setAdapter(new MyPagerAdapter(list));
-		Log.e("albumsize=", albumsize+"");
-		if (albumsize > 1) {
-			currentPag = 0;
-		} else {
-			currentPag = 1;
-		}
-		pager.setCurrentItem(0);
+//		Log.e("albumsize=", albumsize + "");
+//		if (albumsize > 1) {
+//			currentPag = 0;
+//		} else {
+//			currentPag = 1;
+//		}
+//		pager.setCurrentItem(0);
 	}
 
 	/**
@@ -406,7 +441,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 	 * @return
 	 */
 	private void getFrame(int uid, int cur_page) {
-		aboutUsUtils_list = new ArrayList<aboutUsUtils>();
+		
 		List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 		AsyncHttpGet get = new AsyncHttpGet(null, contentUtils.frameList + uid
 				+ "/" + cur_page, parameterList, new RequestResultCallback() {
@@ -415,6 +450,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 				infoCenter.this.runOnUiThread(new Runnable() {
 					public void run() {
 						try {
+							aboutUsUtils_list = new ArrayList<aboutUsUtils>();
 							JSONObject json = new JSONObject(result);
 							Log.e("json=", json + "");
 							Log.e("result=", result + "");
@@ -430,6 +466,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 									aboutUsUtils list = new aboutUsUtils(
 											albumnameList, imgList, albumidList);
 									aboutUsUtils_list.add(list);
+									Log.e("aboutUsUtils_list.size()=", aboutUsUtils_list.size()+"");
 									pager.setCurrentItem(0);// 展示相册
 								}
 							} else {
@@ -442,8 +479,8 @@ public class infoCenter extends Activity implements IXListViewListener,
 						} catch (JSONException e) {
 							e.printStackTrace();
 						}
-						tv3.setText(albumsize+"/n"+"个性"+"/n"+"晒图");
-						Log.e("aboutUsUtils_list.get(0).getAlbumid()=",aboutUsUtils_list.get(0).getAlbumid()+"");
+						tv3.setText("   " + albumsize + "\n" + "个性" + "\n"
+								+ "晒图");
 						gv.setAdapter(new MyGridView(infoCenter.this,
 								aboutUsUtils_list));
 					}
@@ -457,7 +494,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 			}
 		});
 		DefaultThreadPool.getInstance().execute(get);
-		// return aboutUsUtils_list;
 	}
 
 	/**
@@ -467,9 +503,8 @@ public class infoCenter extends Activity implements IXListViewListener,
 		view1 = inflate.inflate(R.layout.aboutus_infocenter_store, null);
 		gv = (GridView) view1
 				.findViewById(R.id.aboutus_infocenter_store_gridview);
-		
 		getFrame(contentUtils.uid, 1);
-		shortUrl = contentUtils.photoList + "323485" + "/";
+		shortUrl = contentUtils.photoList + "323485" + "/";//初始化BUG
 
 	}
 
@@ -477,29 +512,26 @@ public class infoCenter extends Activity implements IXListViewListener,
 	 * GridView适配器
 	 */
 	class MyGridView extends BaseAdapter {
-		private ArrayList<aboutUsUtils> aboutUsUtils;
+		private ArrayList<aboutUsUtils> aboutUsUtils2;
 		private Context mContext;
 		private LayoutInflater inflate;
 		private TextView name;
 		private ImageView frameView;
 		private Bitmap bit;
-		Handler mHandler = new Handler(){
-
+		Handler mHandler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
-				// TODO Auto-generated method stub
 				super.handleMessage(msg);
-				if(msg.what == 1){
+				if (msg.what == 1) {
 					frameView.setImageBitmap(bit);
 				}
 			}
-			
-		};
-		
 
-		public MyGridView(Context mContext, ArrayList<aboutUsUtils> aboutUsUtils) {
+		};
+
+		public MyGridView(Context mContext, ArrayList<aboutUsUtils> aboutUsUtils2) {
 			this.mContext = mContext;
-			this.aboutUsUtils = aboutUsUtils;
+			this.aboutUsUtils2 = aboutUsUtils2;
 			inflate = (LayoutInflater) mContext
 					.getSystemService(LAYOUT_INFLATER_SERVICE);
 		}
@@ -507,7 +539,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
-			return aboutUsUtils.size();
+			return aboutUsUtils2.size();
 		}
 
 		@Override
@@ -523,25 +555,25 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		@Override
-		public View getView(final int position, View convertView1, ViewGroup parent) {
-			View convertView = inflate.inflate(
+		public View getView(final int position, View convertView,
+				ViewGroup parent) {
+			convertView = inflate.inflate(
 					R.layout.aboutus_infocenter_store_frame, null);
 			name = (TextView) convertView
 					.findViewById(R.id.aboutus_infocenter_store_frame_textview);
 			frameView = (ImageView) convertView
 					.findViewById(R.id.aboutus_infocenter_store_frame_imageview);
-			name.setText(aboutUsUtils.get(position).name);
-			Thread thread = new Thread(){
+			name.setText(aboutUsUtils2.get(position).name);
+			Thread thread = new Thread() {
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					super.run();
-					bit = new meshImgUrl().returnBitMap(aboutUsUtils
-							.get(position).picUrl);
+					bit = new meshImgUrl().returnBitMap(aboutUsUtils2.get(position).picUrl);
 					Message msg = new Message();
 					msg.what = 1;
 					mHandler.sendMessage(msg);
+					Log.e("imgUrl=", aboutUsUtils2.get(position).picUrl);
 				}
 			};
 			thread.start();
@@ -606,17 +638,18 @@ public class infoCenter extends Activity implements IXListViewListener,
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.aboutus_infocenter_ibnt1:
-//			startActivity(new Intent(this, MainActivity.class));
 			this.finish();
 			break;
 		case R.id.aboutus_infocenter_tv3:
 			pager.setCurrentItem(0);
 			break;
 		case R.id.aboutus_infocenter_tv4:
-			startActivity(new Intent(this,mapStorage.class));
+			startActivity(new Intent(this, mapStorage.class));
+			break;
+		case R.id.aboutus_infocenter_iv1:// 点击头像查看信息
+			startActivity(new Intent(this, center.class));
 			break;
 		}
 	}

@@ -143,7 +143,7 @@ public class addPic extends Activity implements OnItemClickListener ,OnClickList
 		// TODO Auto-generated method stub
 		switch (v.getId()){
 		case R.id.gallery_addpic_imagebutton:
-			Intent intent=new Intent(this,mapShowMin.class);
+			Intent intent=new Intent(this,mapShowMin2.class);
 			intent.putExtra("url", mapStorage.path2);
 			startActivity(intent);
 			this.finish();

@@ -33,7 +33,7 @@ public class scaleBitmapUtils {
 		} catch (Exception ex) {
 			AbenLog.e("tag", "get thumbnail ");
 			bitmap = BitmapFactory.decodeResource(mContext.getResources(),
-					R.drawable.icon);
+					R.drawable.media);
 		}
 		return bitmap;
 	}

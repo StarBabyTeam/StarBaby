@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Vector;
 
 import com.example.starbaby_03.R;
-import com.starbaby_03.Gallery.mapShowMin.Filter;
-import com.starbaby_03.Gallery.mapShowMin.SearchImage;
 import com.starbaby_03.utils.galleryUtils;
 
 import android.app.Activity;
@@ -159,14 +157,14 @@ public class addPic_show extends Activity implements OnItemClickListener,OnClick
 				Log.e("picPath=", picPath);
 				String picName=addPath.get(key).substring(addPath.get(key).lastIndexOf("/")+1);
 				Log.e("picName=", picName);
-				File file=new File(mapShowMin.str);
+				File file=new File(mapShowMin2.str);
 				Log.e("file=", file+"");
 				if(!file.exists()){
 					file.mkdir();
 				}else{
 					try {
 						Bitmap bmp=BitmapFactory.decodeFile(picPath);
-						File saveFile=new File(mapShowMin.str+"/"+System.currentTimeMillis()+".jpg");
+						File saveFile=new File(mapShowMin2.str+"/"+System.currentTimeMillis()+".jpg");
 						BufferedOutputStream bos;
 						bos = new BufferedOutputStream(
 						        new FileOutputStream(saveFile));

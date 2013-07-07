@@ -3,6 +3,8 @@ package com.starbaby_03.share;
 import java.awt.List;
 import java.util.ArrayList;
 
+import javax.swing.text.LayeredHighlighter.LayerPainter;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.Gallery.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -59,40 +62,38 @@ public class author extends Activity implements OnClickListener{
 	private String author;
 	private String avatar;
 	private String picurl;
-	private String replies;
+	private String replies;//总回复数
+	public  int totalPage;
+	private int mCurPage;
 	private Bitmap headBit,Bit;
+	private final int mPageCount = 10;
+	private int mSelection;
 	private Handler mHandler = new Handler(){
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			super.handleMessage(msg);
 			if(msg.what == 3)
 			tv1.setText(author);
 			iv1.setImageBitmap(headBit);
 			headIv.setImageBitmap(Bit);
 			repliesTv.setText(replies+" "+"条评论");
-			lv.addHeaderView(picView);
-			loginReply(Integer.parseInt(ScrollUtils.picId),1);
-			Log.e("url=", Integer.parseInt(ScrollUtils.picId)+"");
-			
+			lv.addHeaderView(picView );
+			mCurPage = 1;//初始化页数为1，可返回回复数为0
+			float onePage = 10;
+			totalPage = (int) Math.ceil(((float)Integer.parseInt(replies))/onePage);//一共返回几页
+			loginReply(Integer.parseInt(ScrollUtils.picId),mCurPage);
 		}
 		
 	};
+	public int mLastItem;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.share_authorlist);
 		init();
-		listener();
+		json(contentUtils.getPicIdUrl,Integer.parseInt(ScrollUtils.picId));
 	}
-	// 自动刷新
-//	protected void onResume() {
-//		super.onResume();
-//		loginReply(Integer.parseInt(ScrollUtils.picId), 1);
-//		lv.setOnScrollListener(new ScrollListener());
-//	}
 	void loginReply(int picid,int page){
 		final ArrayList<String> authorList = new ArrayList<String>();
 		final ArrayList<String> avatarList = new ArrayList<String>();
@@ -105,10 +106,10 @@ public class author extends Activity implements OnClickListener{
 				final String result = (String) o;
 				author.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Log.e("result2=", result);
 								try {
 									JSONObject json = new JSONObject(result);
 									int pagesize = json.getInt("pagesize");// 当前返回页面的评论条数
+									Log.e("pagesize=", pagesize+"");
 									JSONArray datalist = json
 											.getJSONArray("datalist");
 									for (int i = 0; i < datalist.length(); i++) {
@@ -130,8 +131,11 @@ public class author extends Activity implements OnClickListener{
 									}
 									adapter = new MyAdapter(author.this,list);
 									lv.setAdapter(adapter);
-									lv.setOnScrollListener(new ScrollListener());
+								    lv.setOnScrollListener(new ScrollListener());
+								    if(datalist.length() == mPageCount)
+								    lv.addFooterView(loadingView);
 								} catch (JSONException e) {
+									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
 							}
@@ -140,55 +144,93 @@ public class author extends Activity implements OnClickListener{
 
 			@Override
 			public void onFail(Exception e) {
-				// TODO Auto-generated method stub
 
 			}
 		});
 		DefaultThreadPool.getInstance().execute(get);
-		
-		
-		
-		
 	}
-	int nextpage = 1;
-    int currentpage = 0;
+	
+	void loginReplyMore(int picid,int page){
+		final ArrayList<String> authorList = new ArrayList<String>();
+		final ArrayList<String> avatarList = new ArrayList<String>();
+		final ArrayList<String> msgList  = new ArrayList<String>();
+		final ArrayList<String> timeList = new ArrayList<String>();
+		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
+		AsyncHttpGet get = new AsyncHttpGet(null, contentUtils.replyPicUrl + picid
+				+ "/" + page, parameterList, new RequestResultCallback() {
+			public void onSuccess(Object o) {
+				final String result = (String) o;
+				author.this.runOnUiThread(new Runnable() {
+					public void run() {
+								try {
+									JSONObject json = new JSONObject(result);
+									int pagesize = json.getInt("pagesize");// 当前返回页面的评论条数
+									Log.e("pagesize=", pagesize+"");
+									JSONArray datalist = json
+											.getJSONArray("datalist");
+									for (int i = 0; i < datalist.length(); i++) {
+										JSONObject obj = datalist
+												.getJSONObject(i);
+										authorList.add(obj.getString("author"));
+										avatarList.add(obj.getString("avatar"));
+										msgList.add(obj.getString("message"));
+										timeList.add(obj.getString("dataline"));
+										Log.e("result3=", obj.getString("author")+":"+obj.getString("avatar")+":"+obj.getString("message")+":"+obj.getString("dataline"));
+									}
+									for (int j = 0; j < authorList.size(); j++) {
+										author_list aList = new author_list(
+												avatarList.get(j).toString(),
+												authorList.get(j).toString(),
+												msgList.get(j).toString(),
+												timeList.get(j).toString());
+										list.add(aList);
+									}
+									adapter.notifyDataSetChanged();
+									//lv.setSelection(mSelection);
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+				});
+			}
+
+			@Override
+			public void onFail(Exception e) {
+
+			}
+		});
+		DefaultThreadPool.getInstance().execute(get);
+	}
     private final class ScrollListener implements OnScrollListener{
-    	private int number = 10;
+    	private int number = 10;//每次请求发回回复数最大条目
 		@Override
 		public void onScrollStateChanged(AbsListView view, int scrollState) {
-			Log.e("Test", "onScrollStateChanged(scrollState="+ scrollState + ")");
+			if (mLastItem == adapter.getCount()
+					&& scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+				if (mCurPage != totalPage) {
+					loginReplyMore(Integer.parseInt(ScrollUtils.picId),++mCurPage);
+				}
+			}
 		}
 		
 		@Override
 		public void onScroll(AbsListView view, int firstVisibleItem,
 				int visibleItemCount, int totalItemCount) {
-			Log.e("Test", "onScroll(firstVisibleItem="+ firstVisibleItem+
-					"visibleItemCount="+visibleItemCount+ "totalItemCount="+totalItemCount + ")");
-			//listView.getLastVisiblePosition()
-			if(firstVisibleItem + visibleItemCount == totalItemCount){//下一页
-				if(totalItemCount>0) nextpage = totalItemCount / number + 1;
-				Log.e("nextpage=", nextpage+"");
-				if(currentpage!=nextpage){
-					lv.addFooterView(loadingView);//显示数据正在加载
-					//开线程{得到数据，然后发送消息}
-					handler.sendMessageDelayed(handler.obtainMessage(1, totalItemCount), 3000);
-					currentpage = nextpage;
-				}
+			mSelection = firstVisibleItem;
+			mLastItem = firstVisibleItem + visibleItemCount - 2;
+			Log.i("author","firstVisibleItem = " + firstVisibleItem + "   visibleItemCount = " + visibleItemCount);
+			// 判断当下载下来的数据大小小于15条时
+			if (mCurPage == totalPage) {
+				// mLoadLayout.setVisibility(View.GONE);
+				lv.removeFooterView(loadingView);
 			}
+			
 		}
     }
     
-    Handler handler = new Handler(){
-		public void handleMessage(Message msg) {
-//			author_list list6 = new author_list(R.drawable.add_in, "wangva3", "3", "2012");
-//			author_list list7 = new author_list(R.drawable.add_in, "wangva3", "wagba", "2012");
-//			list.add(list6);
-//			list.add(list7);
-			loginReply(Integer.parseInt(ScrollUtils.picId),currentpage);
-			adapter.notifyDataSetChanged();
-			lv.removeFooterView(loadingView);//当数据加载完后，删除提示
-		}
-    };
+    
+    
 	private void init() {
 		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.share_authorlist_ibnt1);
@@ -204,21 +246,26 @@ public class author extends Activity implements OnClickListener{
 		headIv = (ImageView) picView.findViewById(R.id.pulldown_item2_image2); 
 		repliesTv = (TextView) picView.findViewById(R.id.pulldown_item2_title);
 		//JSON解析照片信息
-		json(contentUtils.getPicIdUrl,Integer.parseInt(ScrollUtils.picId));
+		iBnt1.setOnClickListener(this);
+		iBnt2.setOnClickListener(this);
+		iv1.setOnClickListener(this);
 	}
+	/**
+	 * 加载评论概述
+	 * @param shortUrl
+	 * @param picId
+	 */
 	void json(String shortUrl,int picId){
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 		AsyncHttpGet get = new AsyncHttpGet(null, shortUrl+picId, parameterList, new RequestResultCallback() {
 			
 			@Override
 			public void onSuccess(Object o) {
-				// TODO Auto-generated method stub
 				final String result = (String)o;
 				author.this.runOnUiThread(new Runnable() {
 				
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
 						try {
 							JSONObject json = new JSONObject(result);
 							JSONObject datalist = json.getJSONObject("datalist");
@@ -231,7 +278,6 @@ public class author extends Activity implements OnClickListener{
 
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									super.run();
 									Message msg = new Message();
 									msg.what = 3;
@@ -258,11 +304,6 @@ public class author extends Activity implements OnClickListener{
 		});
 		DefaultThreadPool.getInstance().execute(get);
 	}
-	void listener(){
-		iBnt1.setOnClickListener(this);
-		iBnt2.setOnClickListener(this);
-		iv1.setOnClickListener(this);
-	}
 	/**
 	 * 回复布局
 	 * @author Administrator
@@ -279,7 +320,6 @@ public class author extends Activity implements OnClickListener{
 
 			@Override
 			public void handleMessage(Message msg) {
-				// TODO Auto-generated method stub
 				super.handleMessage(msg);
 				if(msg.what == 2)
 					headIv.setImageBitmap(bitmap);
@@ -309,7 +349,6 @@ public class author extends Activity implements OnClickListener{
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup parent) {
-			// TODO Auto-generated method stub
 			convertView = getLayoutInflater().inflate(R.layout.share_authorlist_view, null);
 			headIv = (ImageView)convertView. findViewById(R.id.share_authorlist_view_iv1);
 			noteTv = (TextView)convertView. findViewById(R.id.share_authorlist_view_tv1);
@@ -328,7 +367,7 @@ public class author extends Activity implements OnClickListener{
 			};
 			thread.start();
 			noteTv.setText(totalList.get(position).name+":"+totalList.get(position).msg);
-			timeTv.setText(totalList.get(position).time);
+			timeTv.setText(totalList.get(position).time + "          " + position);
 			return convertView;
 		}
 	}

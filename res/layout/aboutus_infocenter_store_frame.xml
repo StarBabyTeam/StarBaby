@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:padding="10dp" >
 
 
@@ -11,8 +10,6 @@
         android:layout_width="94dp"
         android:layout_height="97dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/app"
         android:scaleType="fitXY" >
     </ImageView>
 
@@ -22,7 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:background="@drawable/gallery_mapstorage_frame2"
         android:scaleType="fitXY" >
     </ImageView>
@@ -36,7 +32,7 @@
         android:background="@drawable/gallery_mapstorage_title"
         android:gravity="center"
         android:text="cell_name"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:textColor="@color/white"
         android:textSize="10dp" />
 

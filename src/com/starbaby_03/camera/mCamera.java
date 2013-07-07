@@ -21,7 +21,7 @@ import com.googlecode.javacv.cpp.opencv_core.CvRect;
 import com.googlecode.javacv.cpp.opencv_core.CvSeq;
 import com.googlecode.javacv.cpp.opencv_core.IplImage;
 import com.googlecode.javacv.cpp.opencv_objdetect.CvHaarClassifierCascade;
-import com.starbaby_03.main.appMain;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.scroll.scroll;
 import com.starbaby_03.utils.ScrollUtils;
@@ -1030,7 +1030,7 @@ public class mCamera extends Activity implements OnClickListener,
 		viewFlag = 1;
 		FFLAG = 0;
 		FLAG = 0;
-		Intent intent = new Intent(this, appMain.class);
+		Intent intent = new Intent(this, MainActivity.class);
 		startActivity(intent);
 	}
 }

@@ -24,13 +24,16 @@ import com.starbaby_03.net.RequestParameter;
 import com.starbaby_03.net.RequestResultCallback;
 import com.starbaby_03.saveAndSearch.savePhoto;
 import com.starbaby_03.saveAndSearch.serach;
+import com.starbaby_03.utils.EncodeUtil;
 import com.starbaby_03.utils.JsonObject;
 import com.starbaby_03.utils.MyData;
+import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.UploadUtil;
 import com.starbaby_03.utils.aboutUsUtils;
 import com.starbaby_03.utils.beautyUtils;
 import com.starbaby_03.utils.contentUtils;
 import com.starbaby_03.utils.saveFile;
+import com.starbaby_03.utils.weiboUtils;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -43,6 +46,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.AlteredCharSequence;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -51,6 +55,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -76,6 +81,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 	private ArrayList<aboutUsUtils> aboutUsUtils_list;
 	private ArrayList<String> albumname =null;
 	private ArrayList<Integer> albumid = null;
+	private EditText etView1;
+	private EditText etView2;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -111,10 +118,27 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			if(str.equals("save") ){//保存本地
 				searchFile();
 			}else if(str.equals("release")){//分享出去
-				//首先获取线上所有相册
-				getFrame(contentUtils.spGetInfo.getInt("uid", 0),1);
+				// 首先获取线上所有相册
+//				if (contentUtils.spGetInfo.contains("psw")) {
+					getFrame(contentUtils.spGetInfo.getInt("uid", 0), 1);
+//				}
+//				showEnter();
 			}
 			break;	
+		case R.id.info_enter_view_ibnt1://登入
+			String name = etView1.getText().toString();
+			String pwd = etView2.getText().toString();
+			if(name != null && pwd != null){
+				contentUtils.psw = EncodeUtil.getMD5(pwd.getBytes());
+				Log.e("contentUtils.psw=", contentUtils.psw);
+				if(contentUtils.psw != null || contentUtils.psw !="")
+				contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+				login(name,contentUtils.psw);
+			}
+			break;
+		case R.id.info_enter_view_ibnt2://注册
+			startActivity(new Intent(this,user_register.class));
+			break;
 		}
 	}
 	/**
@@ -448,10 +472,10 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				int length3 = et.getText().toString().length();
-				picDescribe = et1.getText().toString();
+				picDescribe = et.getText().toString();
 				if(picDescribe.length() == 0){
 					//先上传照片服务端 获取照片url
-					final File file = new File(saveFile.operateName);
+					final File file = new File(ScrollUtils.sharePath);
 					if(file != null){
 						Thread thread = new Thread(){
 
@@ -481,6 +505,13 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 		AlertDialog alert = builder.create();
 		alert.show();
 		}
+		/**
+		 * 添加相册
+		 * @param uid
+		 * @param pwd
+		 * @param name
+		 * @param sys
+		 */
 		void LoginAddAlbum(int uid ,String pwd,String name,int sys){
 			List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 			parameterList.add(new RequestParameter("uid", uid+""));
@@ -488,7 +519,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			parameterList.add(new RequestParameter("name", name));
 			parameterList.add(new RequestParameter("sys", sys+""));
 			AsyncHttpPost httpost = new AsyncHttpPost(null,
-					contentUtils.sendPicUrl, parameterList,
+					contentUtils.addAlbumUrl, parameterList,
 					new RequestResultCallback() {
 
 						@Override
@@ -503,7 +534,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 									try {
 										json = new JSONObject(result);
 										final int albumidId = json.getInt("albumid");
-										final File file = new File(saveFile.operateName);
+										final File file = new File(ScrollUtils.sharePath);
 										if(file != null){
 											Thread thread = new Thread(){
 
@@ -540,6 +571,15 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			DefaultThreadPool.getInstance().execute(httpost);
 			
 		}
+		/**
+		 * 上传照片接口
+		 * @param uid
+		 * @param pwd
+		 * @param Albumid
+		 * @param Picurl
+		 * @param Txt
+		 * @param Sys
+		 */
 		void Login(int uid,String pwd,int Albumid,String Picurl,String Txt ,int Sys){
 			List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 			parameterList.add(new RequestParameter("uid", uid+""));
@@ -586,6 +626,81 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 						@Override
 						public void onFail(Exception e) {
 							// TODO Auto-generated method stub
+						}
+					});
+			DefaultThreadPool.getInstance().execute(httpost);
+		}
+		void showEnter(){
+			AlertDialog.Builder builder = new AlertDialog.Builder(scrollOperate.this);
+			View view = getLayoutInflater().inflate(R.layout.info_enter_view, null);
+			Button iBntView1 = (Button)view.findViewById(R.id.info_enter_view_ibnt1);
+			Button iBntView2 = (Button)view.findViewById(R.id.info_enter_view_ibnt2);
+			etView1 =  (EditText)view. findViewById(R.id.info_center_view_et1);
+			etView2 =  (EditText)view. findViewById(R.id.info_center_view_et2);
+			builder.setView(view);
+			AlertDialog alert = builder.create();
+			alert.show();
+			iBntView1.setOnClickListener(this);
+			iBntView2.setOnClickListener(this);
+		}
+		// 登入判断
+		public void login(String userName, String userPasword) {
+
+			List<RequestParameter> parameterList = new ArrayList<RequestParameter>();
+			parameterList.add(new RequestParameter("username", userName));
+			parameterList.add(new RequestParameter("pwd", userPasword));
+			AsyncHttpPost httpost = new AsyncHttpPost(null, contentUtils.enterUrl,
+					parameterList, new RequestResultCallback() {
+
+						@Override
+						public void onSuccess(Object o) {
+							// TODO Auto-generated method stub
+							final String result = (String) o;
+							scrollOperate.this.runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									// TODO Auto-generated method stub
+									try {
+										contentUtils.msg = new JsonObject()
+												.getMSG(result);
+										if (contentUtils.msg == 1) {
+											contentUtils.psw = etView2.getText()
+													.toString();
+											contentUtils.uid = new JsonObject()
+													.getUID(result);
+											contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();
+											contentUtils.username = new JsonObject()
+													.getUSERNAME(result);
+											contentUtils.spGetInfo.edit().putString("username", contentUtils.username).commit();
+											contentUtils.avatar = new JsonObject()
+													.getAVATAR(result);
+											contentUtils.spinfo
+													.edit()
+													.putString("username",
+															contentUtils.username)
+													.commit();
+											contentUtils.spinfo
+													.edit()
+													.putString("avatar",
+															contentUtils.avatar)
+													.commit();
+										}
+									} catch (JSONException e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+
+									Log.e("result", result);
+
+								}
+							});
+						}
+
+						@Override
+						public void onFail(Exception e) {
+							// TODO Auto-generated method stub
+
 						}
 					});
 			DefaultThreadPool.getInstance().execute(httpost);

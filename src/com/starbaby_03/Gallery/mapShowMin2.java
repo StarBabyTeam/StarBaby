@@ -17,7 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
-import com.starbaby_03.Gallery.mapShowMin.Filter;
 import com.starbaby_03.aboutUs.infoCenter;
 import com.starbaby_03.aboutUs.infoCenter.ContentTask;
 import com.starbaby_03.aboutUs.infoCenter.StaggeredAdapter;
@@ -63,6 +62,7 @@ public class mapShowMin2 extends Activity implements
 	private ArrayList<LinearLayout> linearLayouts;// 列布局
 	private LinearLayout progressbar;// 进度条
 	private TextView loadtext;// 底部加载view
+	private TextView tv1;
 	private ImageDownLoadAsyncTask asyncTask;
 	private int current_page = 0;// 页码
 	private int count = 6;// 每页显示的个数
@@ -70,6 +70,7 @@ public class mapShowMin2 extends Activity implements
 	private int item_width;// 每一个item的宽度
 	private ArrayList<String> pathList;// 存放相册下图片的url
 	private ImageButton iBnt1,iBnt2,iBnt3;
+	public static String str = null;
 	/***
 	 * init view
 	 */
@@ -86,6 +87,7 @@ public class mapShowMin2 extends Activity implements
 		iBnt1=(ImageButton) findViewById(R.id.gallery_showmin2_imagebutton1);//返回
 		iBnt2=(ImageButton) findViewById(R.id.gallery_showmin2_imagebutton3);//拍照
 		iBnt3 = (ImageButton) findViewById(R.id.gallery_showmin2_imagebutton2);//导入图片
+		tv1 = (TextView) findViewById(R.id.gallery_showmin2_textview);
 		// 添加三列到waterfall_container
 		for (int i = 0; i < column; i++) {
 			LinearLayout layout = new LinearLayout(this);
@@ -107,11 +109,13 @@ public class mapShowMin2 extends Activity implements
 		initView();
 		listener();
 		Intent intent = getIntent();
-		String str = intent.getStringExtra("url");
+		str = intent.getStringExtra("url");
 		System.out.print(str);
 		getAllFiles(new File(str));
 		// 第一次加载
 		addImage(current_page, count);
+		tv1.setText(str.substring(str.lastIndexOf("/") + 1,
+				str.length()));
 	}
 
 	private void listener() {
@@ -299,11 +303,11 @@ public class mapShowMin2 extends Activity implements
 		case R.id.gallery_showmin2_imagebutton1:
 			this.finish();
 			break;
-		case R.id.gallery_showmin2_imagebutton3:
+		case R.id.gallery_showmin2_imagebutton3://拍照
 			startActivity(new Intent(this,mCamera.class));
 			this.finish();
 			break;
-		case R.id.gallery_showmin2_imagebutton2:
+		case R.id.gallery_showmin2_imagebutton2://导入照片
 			Intent intent2 = new Intent(this, addPic.class);
 			startActivity(intent2);
 			this.finish();
