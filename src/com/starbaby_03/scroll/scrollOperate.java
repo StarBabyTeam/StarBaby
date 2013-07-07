@@ -63,7 +63,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemSelectedListener;
-
+/**
+ * 
+ * 保存图片到本地，或者分享出去
+ * @author Administrator
+ *
+ */
 public class scrollOperate extends Activity implements android.view.View.OnClickListener {
 	private ImageButton iBnt1,iBnt2;
 	private ImageView iv1;
@@ -83,6 +88,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 	private ArrayList<Integer> albumid = null;
 	private EditText etView1;
 	private EditText etView2;
+	private AlertDialog alert;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -107,7 +113,6 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch(v.getId()){
 		case R.id.scrolloperate_iBnt1://返回操作
 			this.finish();
@@ -119,10 +124,12 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 				searchFile();
 			}else if(str.equals("release")){//分享出去
 				// 首先获取线上所有相册
-//				if (contentUtils.spGetInfo.contains("psw")) {
+				Log.e("contentUtils.spGetInfo.contains", contentUtils.spGetInfo.getString("psw", ""));
+				if (contentUtils.spGetInfo.contains("psw")) {
 					getFrame(contentUtils.spGetInfo.getInt("uid", 0), 1);
-//				}
-//				showEnter();
+				}else{
+					showEnter();
+				}
 			}
 			break;	
 		case R.id.info_enter_view_ibnt1://登入
@@ -223,6 +230,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 		/**
 		 * 
 		 *  自定义alterdialog
+		 *  本地
 		 *  1.选择相册进行存储 
 		 *  2.自行创建新相册
 		 */
@@ -345,6 +353,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 		}
 
 		/**
+		 * 	本地
 		 *  没有相册，创建新相册
 		 */
 		void showDialog1() {
@@ -426,6 +435,9 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			AlertDialog alert = builder.create();
 			alert.show();
 		}
+		/**
+		 * 保存分享到线上
+		 */
 		void showDialog3(){
 			LayoutInflater inflate = LayoutInflater.from(this);
 			View title = inflate.inflate(R.layout.scroll_dialog_title, null);
@@ -638,7 +650,7 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			etView1 =  (EditText)view. findViewById(R.id.info_center_view_et1);
 			etView2 =  (EditText)view. findViewById(R.id.info_center_view_et2);
 			builder.setView(view);
-			AlertDialog alert = builder.create();
+			alert = builder.create();
 			alert.show();
 			iBntView1.setOnClickListener(this);
 			iBntView2.setOnClickListener(this);
@@ -690,9 +702,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
-
 									Log.e("result", result);
-
+									alert.dismiss();
 								}
 							});
 						}

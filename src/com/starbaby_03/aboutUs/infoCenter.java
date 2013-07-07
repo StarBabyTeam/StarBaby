@@ -25,7 +25,9 @@ import com.starbaby_03.net.AsyncHttpGet;
 import com.starbaby_03.net.DefaultThreadPool;
 import com.starbaby_03.net.RequestParameter;
 import com.starbaby_03.net.RequestResultCallback;
+import com.starbaby_03.share.ImageLoader;
 import com.starbaby_03.share.author;
+import com.starbaby_03.share.author_list;
 import com.starbaby_03.utils.JsonObject;
 import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.aboutUsUtils;
@@ -228,39 +230,33 @@ public class infoCenter extends Activity implements IXListViewListener,
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			ViewHolder holder;
 			HotInfo duitangInfo = mInfos.get(position);
-			if (convertView == null) {
-				LayoutInflater layoutInflator = LayoutInflater.from(parent
-						.getContext());
-				convertView = layoutInflator.inflate(R.layout.main_infos_list,
-						null);
-				holder = new ViewHolder();
-				holder.imageView = (ScaleImageView) convertView
-						.findViewById(R.id.news_pic);
-				holder.contentView = (TextView) convertView
-						.findViewById(R.id.news_name);
-				holder.timeView = (TextView) convertView
-						.findViewById(R.id.news_note);
-				convertView.setTag(holder);
-			}
-			holder = (ViewHolder) convertView.getTag();
-			holder.imageView.setImageWidth(duitangInfo.getWidth());
-			holder.imageView.setImageHeight(duitangInfo.getHeight());
+			LayoutInflater layoutInflator = LayoutInflater.from(parent
+					.getContext());
+			convertView = layoutInflator
+					.inflate(R.layout.main_infos_list, null);
+			ScaleImageView imageView = (ScaleImageView) convertView
+					.findViewById(R.id.news_pic);
+			TextView contentView = (TextView) convertView
+					.findViewById(R.id.news_name);
+			TextView timeView = (TextView) convertView
+					.findViewById(R.id.news_note);
+			imageView.setImageWidth(duitangInfo.getWidth());
+			imageView.setImageHeight(duitangInfo.getHeight());
 			if (duitangInfo.getAuthorList().size() > 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ duitangInfo.getCommentList().get(0));
-				holder.timeView.setText(duitangInfo.getAuthorList().get(1)
+				timeView.setText(duitangInfo.getAuthorList().get(1)
 						+ duitangInfo.getCommentList().get(1));
 			} else if (duitangInfo.getAuthorList().size() == 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ duitangInfo.getCommentList().get(0));
-				holder.timeView.setVisibility(8);
+				timeView.setVisibility(8);
 			} else if (duitangInfo.getAuthorList().size() == 0) {
-				holder.contentView.setVisibility(8);
-				holder.timeView.setVisibility(8);
+				contentView.setVisibility(8);
+				timeView.setVisibility(8);
 			}
-			mImageFetcher.loadImage(duitangInfo.getIsrc(), holder.imageView);
+			mImageFetcher.loadImage(duitangInfo.getIsrc(), imageView);
 			return convertView;
 		}
 
@@ -277,7 +273,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		@Override
-		public Object getItem(int arg0) {
+		public HotInfo getItem(int arg0) {
 			return mInfos.get(arg0);
 		}
 
@@ -320,6 +316,19 @@ public class infoCenter extends Activity implements IXListViewListener,
 		InitViewPager();
 		gv.setOnItemClickListener(this);
 		ViewHolder holder = null;
+		
+		mImageFetcher.setExitTasksEarly(false);
+		mAdapterView.setAdapter(mAdapter);
+		mAdapterView.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(PLA_AdapterView<?> parent, View view,
+					int position, long id) {
+				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+				startActivity(new Intent(infoCenter.this,author.class));
+			}
+		});
+		int current_page_refresh = 1;
+		AddItemToContainer(currentPage, 3 ,current_page_refresh);
 	}
 
 	private void listener() {
@@ -355,36 +364,12 @@ public class infoCenter extends Activity implements IXListViewListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mImageFetcher.setExitTasksEarly(false);
-		mAdapterView.setAdapter(mAdapter);
-		mAdapterView
-				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(PLA_AdapterView<?> parent,
-							View view, int position, long id) {
-						ScrollUtils.picId = duitangs.get(position - 1)
-								.getPicId();
-						startActivity(new Intent(infoCenter.this, author.class));
-					}
-				});
-		int new_current_page = 1;
-		AddItemToContainer(currentPage, 3, new_current_page);
 	}
 
 	// 下拉刷新
 	@Override
 	public void onRefresh() {
 		new_current_page_down = 1;
-		mAdapterView
-				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(PLA_AdapterView<?> parent,
-							View view, int position, long id) {
-						ScrollUtils.picId = duitangs.get(position - 1)
-								.getPicId();
-						startActivity(new Intent(infoCenter.this, author.class));
-					}
-				});
 		AddItemToContainer(++currentPage, 1, new_current_page_down);
 	}
 
@@ -392,16 +377,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 	@Override
 	public void onLoadMore() {
 		new_current_page_up = new_current_page_up + 1;
-		mAdapterView
-				.setOnItemClickListener(new PLA_AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(PLA_AdapterView<?> parent,
-							View view, int position, long id) {
-						ScrollUtils.picId = duitangs.get(position - 1)
-								.getPicId();
-						startActivity(new Intent(infoCenter.this, author.class));
-					}
-				});
 		AddItemToContainer(++currentPage, 2, new_current_page_up);
 	}
 
@@ -481,7 +456,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 						}
 						tv3.setText("   " + albumsize + "\n" + "个性" + "\n"
 								+ "晒图");
-						gv.setAdapter(new MyGridView(infoCenter.this,
+						gv.setAdapter(new lazyAdapter(infoCenter.this,
 								aboutUsUtils_list));
 					}
 				});
@@ -511,31 +486,22 @@ public class infoCenter extends Activity implements IXListViewListener,
 	/**
 	 * GridView适配器
 	 */
-	class MyGridView extends BaseAdapter {
-		private ArrayList<aboutUsUtils> aboutUsUtils2;
+	class lazyAdapter extends BaseAdapter{
 		private Context mContext;
-		private LayoutInflater inflate;
-		private TextView name;
-		private ImageView frameView;
-		private Bitmap bit;
-		Handler mHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				if (msg.what == 1) {
-					frameView.setImageBitmap(bit);
-				}
-			}
-
-		};
-
-		public MyGridView(Context mContext, ArrayList<aboutUsUtils> aboutUsUtils2) {
+		private ArrayList<aboutUsUtils> aboutUsUtils2;
+		private LayoutInflater inflater=null;
+	    public ImageLoader imageLoader; 
+	    private Bitmap bitmap;
+	    private TextView time;
+		private ImageView image;
+		private TextView note;
+		
+		public lazyAdapter(Context mContext ,ArrayList<aboutUsUtils> aboutUsUtils2 ){
 			this.mContext = mContext;
 			this.aboutUsUtils2 = aboutUsUtils2;
-			inflate = (LayoutInflater) mContext
-					.getSystemService(LAYOUT_INFLATER_SERVICE);
+			inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        imageLoader=new ImageLoader(mContext.getApplicationContext());
 		}
-
 		@Override
 		public int getCount() {
 			// TODO Auto-generated method stub
@@ -543,41 +509,30 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		@Override
-		public Object getItem(int position) {
+		public Object getItem(int arg0) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public long getItemId(int position) {
+		public long getItemId(int arg0) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
-		public View getView(final int position, View convertView,
-				ViewGroup parent) {
-			convertView = inflate.inflate(
-					R.layout.aboutus_infocenter_store_frame, null);
-			name = (TextView) convertView
+		public View getView(final int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			View vi = convertView;
+			if (convertView == null)
+				vi = inflater.inflate(R.layout.aboutus_infocenter_store_frame, null);
+			TextView name = (TextView) vi
 					.findViewById(R.id.aboutus_infocenter_store_frame_textview);
-			frameView = (ImageView) convertView
+			ImageView frameView = (ImageView) vi
 					.findViewById(R.id.aboutus_infocenter_store_frame_imageview);
 			name.setText(aboutUsUtils2.get(position).name);
-			Thread thread = new Thread() {
-
-				@Override
-				public void run() {
-					super.run();
-					bit = new meshImgUrl().returnBitMap(aboutUsUtils2.get(position).picUrl);
-					Message msg = new Message();
-					msg.what = 1;
-					mHandler.sendMessage(msg);
-					Log.e("imgUrl=", aboutUsUtils2.get(position).picUrl);
-				}
-			};
-			thread.start();
-			return convertView;
+			imageLoader.DisplayImage(aboutUsUtils2.get(position).picUrl, frameView);
+			return vi;
 		}
 
 	}
@@ -660,7 +615,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 		int albumid = aboutUsUtils_list.get(arg2).getAlbumid();
 		shortUrl = contentUtils.photoList + albumid + "/";
 		FLAG = 2;
-		onResume();
+		onRefresh();
 		pager.setCurrentItem(1);
 	}
 }

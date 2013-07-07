@@ -1,8 +1,10 @@
 package com.starbaby_03.main;
 
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.baidu.mobstat.StatService;
 import com.example.starbaby_03.R;
 import com.googlecode.javacpp.Builder.UserClassLoader;
 import com.starbaby_03.aboutUs.infoCenter;
@@ -33,6 +35,10 @@ public class appMenu extends Activity{
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.main_appmenu);
 		imageView=(ImageView) findViewById(R.id.imageview);
+		File file = new File("/mnt/sdcard/");
+		if(!file.exists()){
+			file.mkdir();
+		}
 		beautyUtils.spPic=getSharedPreferences("spPic", MODE_WORLD_READABLE);//本地照片的描述
 		contentUtils.sp = this.getSharedPreferences("enter", MODE_WORLD_READABLE);//  记住密码的操作
 		contentUtils.spinfo = this.getSharedPreferences("userInfo",MODE_WORLD_READABLE);// 通过判断该app当前的用户，用来调用头像接口。即使不登入，也可以在本地显示头像
@@ -48,5 +54,20 @@ public class appMenu extends Activity{
 			}
 		};
 		timer.schedule(timerTask, 1000*2);
+	}
+	 /**
+     * 百度统计模块
+     */
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		StatService.onPause(this);
+	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		StatService.onResume(this);
 	}
 }

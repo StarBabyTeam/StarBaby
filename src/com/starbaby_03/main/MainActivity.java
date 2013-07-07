@@ -443,12 +443,12 @@ public class MainActivity extends FragmentActivity implements
 			return convertView;
 		}
 
-	    class ViewHolder {
-			ScaleImageView imageView;
-			TextView contentView;
-			TextView timeView;
-
-		}
+//	    class ViewHolder {
+//			ScaleImageView imageView;
+//			TextView contentView;
+//			TextView timeView;
+//
+//		}
 
 		@Override
 		public int getCount() {
@@ -470,9 +470,6 @@ public class MainActivity extends FragmentActivity implements
 		}
 		
 		public void addItemTop(List<NewInfo> datas) {
-//			for (NewInfo info : datas) {
-//				mInfos.addFirst(info);
-//			}
 			mInfos.clear();
 			mInfos.addAll(datas);
 		}
@@ -550,7 +547,6 @@ public class MainActivity extends FragmentActivity implements
 	@Override
 	public void onLoadMore() {
 		new_current_page = new_current_page+1;
-		Log.e("new_current_page=", new_current_page+"");
 		AddItemToContainer(++currentPage, 2 ,new_current_page);
 	}
 

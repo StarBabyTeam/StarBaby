@@ -7,9 +7,10 @@
 
     <ImageView
         android:id="@+id/aboutus_infocenter_store_frame_imageview"
-        android:layout_width="94dp"
+        android:layout_width="90dp"
         android:layout_height="97dp"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
         android:scaleType="fitXY" >
     </ImageView>
 

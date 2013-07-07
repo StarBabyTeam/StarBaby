@@ -73,12 +73,24 @@ OnClickListener{
 			}
 			break;
 		case R.id.scroll_dialog_button1://保存 跳转到心情 界面
+			try {
+				new savePhoto().takePhoto(cameraUtils.bitmap);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Intent intent = new Intent(this,scrollOperate.class);
 			intent.putExtra("scroll", "save");
 			startActivity(intent);
 			alert.dismiss();
 			break;
 		case R.id.scroll_dialog_button2:// 发布，跳转到心情 界面
+			try {
+				new savePhoto().takePhoto(cameraUtils.bitmap);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Intent intent2 = new Intent(this,scrollOperate.class);
 			intent2.putExtra("scroll", "release");
 			startActivity(intent2);

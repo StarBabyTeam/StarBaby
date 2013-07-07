@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -52,7 +53,7 @@ import android.widget.AbsListView.OnScrollListener;
 public class author extends Activity implements OnClickListener{
 	private ListView lv;
 	private ArrayList<author_list> list =  new ArrayList<author_list>();
-	private MyAdapter adapter;
+	private lazyAdapter adapter;
 	View loadingView,picView;
 	private ImageButton iBnt1,iBnt2;
 	private TextView tv1,repliesTv;
@@ -90,6 +91,9 @@ public class author extends Activity implements OnClickListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		show();
+	}
+	void show(){
 		setContentView(R.layout.share_authorlist);
 		init();
 		json(contentUtils.getPicIdUrl,Integer.parseInt(ScrollUtils.picId));
@@ -129,7 +133,7 @@ public class author extends Activity implements OnClickListener{
 												timeList.get(j).toString());
 										list.add(aList);
 									}
-									adapter = new MyAdapter(author.this,list);
+									adapter = new lazyAdapter(author.this,list);
 									lv.setAdapter(adapter);
 								    lv.setOnScrollListener(new ScrollListener());
 								    if(datalist.length() == mPageCount)
@@ -222,7 +226,6 @@ public class author extends Activity implements OnClickListener{
 			Log.i("author","firstVisibleItem = " + firstVisibleItem + "   visibleItemCount = " + visibleItemCount);
 			// 判断当下载下来的数据大小小于15条时
 			if (mCurPage == totalPage) {
-				// mLoadLayout.setVisibility(View.GONE);
 				lv.removeFooterView(loadingView);
 			}
 			
@@ -309,67 +312,56 @@ public class author extends Activity implements OnClickListener{
 	 * @author Administrator
 	 *
 	 */
-	class MyAdapter extends BaseAdapter{
+	class lazyAdapter extends BaseAdapter{
 		private Context mContext;
 		private ArrayList<author_list> totalList;
-		private ImageView headIv;
-		private Bitmap bitmap;
-		private TextView noteTv;
-		private TextView timeTv;
-		private Handler newHandler = new Handler(){
-
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				if(msg.what == 2)
-					headIv.setImageBitmap(bitmap);
-			}
-			
-		};
-		public MyAdapter (Context mContext, ArrayList<author_list> totalList){
+		private LayoutInflater inflater=null;
+	    public ImageLoader imageLoader; 
+	    private Bitmap bitmap;
+	    private TextView time;
+		private ImageView image;
+		private TextView note;
+		
+		public lazyAdapter(Context mContext ,ArrayList<author_list> totalList ){
 			this.mContext = mContext;
 			this.totalList = totalList;
+			inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        imageLoader=new ImageLoader(mContext.getApplicationContext());
 		}
 		@Override
 		public int getCount() {
+			// TODO Auto-generated method stub
 			return totalList.size();
 		}
 
 		@Override
-		public Object getItem(int position) {
+		public Object getItem(int arg0) {
 			// TODO Auto-generated method stub
 			return null;
 		}
 
 		@Override
-		public long getItemId(int position) {
+		public long getItemId(int arg0) {
 			// TODO Auto-generated method stub
 			return 0;
 		}
 
 		@Override
-		public View getView(final int position, View convertView, ViewGroup parent) {
-			convertView = getLayoutInflater().inflate(R.layout.share_authorlist_view, null);
-			headIv = (ImageView)convertView. findViewById(R.id.share_authorlist_view_iv1);
-			noteTv = (TextView)convertView. findViewById(R.id.share_authorlist_view_tv1);
-			timeTv = (TextView)convertView. findViewById(R.id.share_authorlist_view_tv2);
-			Thread thread =new Thread(){
-
-				@Override
-				public void run() {
-					super.run();
-					bitmap = new meshImgUrl().returnBitMap(totalList.get(position).url);
-					Message msg = new Message();
-					msg.what = 2;
-					newHandler.sendMessage(msg);
-				}
-				
-			};
-			thread.start();
-			noteTv.setText(totalList.get(position).name+":"+totalList.get(position).msg);
-			timeTv.setText(totalList.get(position).time + "          " + position);
-			return convertView;
+		public View getView(final int position, View convertView, ViewGroup arg2) {
+			// TODO Auto-generated method stub
+			View vi = convertView;
+			if (convertView == null)
+				vi = inflater.inflate(R.layout.share_authorlist_view, null);
+			note = (TextView) vi.findViewById(R.id.share_authorlist_view_tv1);
+			image = (ImageView) vi.findViewById(R.id.share_authorlist_view_iv1);
+			time = (TextView) vi.findViewById(R.id.share_authorlist_view_tv2);
+			note.setText(totalList.get(position).name + ":"
+					+ totalList.get(position).msg);
+			time.setText(totalList.get(position).time + "          " + position);
+			imageLoader.DisplayImage(totalList.get(position).url, image);
+			return vi;
 		}
+
 	}
 	@Override
 	public void onClick(View v) {
@@ -401,7 +393,7 @@ public class author extends Activity implements OnClickListener{
 				final String result = (String) o;
 				author.this.runOnUiThread(new Runnable() {
 					public void run() {
-						Log.e("result=", result);
+						Log.e("resultNote=", result);
 					}
 				});
 			}
@@ -409,7 +401,6 @@ public class author extends Activity implements OnClickListener{
 			@Override
 			public void onFail(Exception e) {
 				// TODO Auto-generated method stub
-
 			}
 		});
 		DefaultThreadPool.getInstance().execute(post);

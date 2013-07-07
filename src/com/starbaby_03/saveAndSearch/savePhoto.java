@@ -34,7 +34,11 @@ public class savePhoto {
 	//从相册获取保存操作
 	public void savephoto(Intent intent)
 	{
+		
 		  tempFile=new File(saveFile.operateName);
+		  if(tempFile.exists()){
+			  tempFile.delete();  
+		  }
 		  File temp = new File(saveFile.operatePath);//自已项目 文件夹
 			if (!temp.exists()) {
 				temp.mkdir();
@@ -52,6 +56,9 @@ public class savePhoto {
 			folder.mkdir();
 		}
 		File myCaptureFile = new File(saveFile.operateName);
+		if(myCaptureFile.exists()){
+			myCaptureFile.delete();
+		}
 	        BufferedOutputStream bos = new BufferedOutputStream(
 	                                                 new FileOutputStream(myCaptureFile));
 	        bmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
@@ -88,6 +95,9 @@ public class savePhoto {
 			folder.mkdir();
 		}
 		File headImgFile=new File( saveFile.headName);
+		if(headImgFile.exists()){
+			headImgFile.delete();
+		}
 		BufferedOutputStream boStream=new BufferedOutputStream(new FileOutputStream(headImgFile));
 		bitmap.compress(Bitmap.CompressFormat.JPEG,80,boStream);
 		boStream.flush();
@@ -103,6 +113,9 @@ public class savePhoto {
 			folder.mkdir();
 		}
 		File headImgFile=new File( saveFile.operateName);
+		if(headImgFile.exists()){
+			headImgFile.delete();
+		}
 		Matrix matrix=new Matrix();
 		Bitmap bitmap=BitmapFactory.decodeFile(filepath.toString());
 		Bitmap newBitmap=null;
@@ -148,6 +161,9 @@ public class savePhoto {
 			folder.mkdir();
 		}
 		File myCaptureFile = new File(saveFile.operateName);
+		if(myCaptureFile.exists()){
+			myCaptureFile.delete();
+		}
 	        BufferedOutputStream bos = new BufferedOutputStream(
 	                                                 new FileOutputStream(myCaptureFile));
 	        bmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);

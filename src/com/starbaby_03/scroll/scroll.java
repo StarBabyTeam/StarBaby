@@ -163,7 +163,7 @@ public class scroll extends Activity implements OnTouchListener,
 			iv.setImageBitmap(myBitmap);
 			listener();
 		} else if (getIntent().getExtras().getInt(ScrollUtils.INTENT_FLAG) == ScrollUtils.CAMERA_IMAGE) {
-			new savePhoto().scale(new File(saveFile.operatePath+saveFile.operateName), beautyUtils.layoutWidth,
+			new savePhoto().scale(new File(saveFile.operateName), beautyUtils.layoutWidth,
 					beautyUtils.layoutHight);
 			myBitmap = BitmapFactory.decodeFile(tempFile.toString());
 			iv.setImageBitmap(myBitmap);

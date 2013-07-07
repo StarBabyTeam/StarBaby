@@ -286,7 +286,7 @@ public class user_enter extends Activity implements OnClickListener {
 									if (contentUtils.msg == 1) {
 										contentUtils.psw = editText2.getText()
 												.toString();
-										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+//										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
 										contentUtils.uid = new JsonObject()
 												.getUID(result);
 										contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();

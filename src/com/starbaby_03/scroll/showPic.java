@@ -14,7 +14,12 @@ import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+/***
+ * 
+ * 展示本地单张图片以及图片描述
+ * @author Administrator
+ *
+ */
 public class showPic extends Activity implements OnClickListener {
 	private ImageButton iBnt1, iBnt2;
 	private ImageView iv1;
@@ -36,7 +41,7 @@ public class showPic extends Activity implements OnClickListener {
 		iBnt2.setOnClickListener(this);
 	}
 
-	private void init() {
+	private void init() {                                          
 		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt1);
 		iBnt2 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt2);
