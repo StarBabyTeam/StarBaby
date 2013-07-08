@@ -256,6 +256,7 @@ public class scroll extends Activity implements OnTouchListener,
 		case R.id.scroll_dialog_button1://保存 跳转到心情 界面
 			Intent intent = new Intent(this,scrollOperate.class);
 			intent.putExtra("scroll", "save");
+//			ScrollUtils.sharePath = saveFile.operateName;
 			startActivity(intent);
 			alert.dismiss();
 			break;
@@ -263,6 +264,7 @@ public class scroll extends Activity implements OnTouchListener,
 			Intent intent2 = new Intent(this,scrollOperate.class);
 			intent2.putExtra("scroll", "release");
 			ScrollUtils.sharePath = saveFile.operateName;
+			
 			startActivity(intent2);
 			alert.dismiss();
 			break;

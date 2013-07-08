@@ -27,7 +27,7 @@ public class appMenu extends Activity{
 	private ImageView imageView;
 	@Override
 	/**
-	 *  commit:1
+	 *  commit:2
 	 */
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub

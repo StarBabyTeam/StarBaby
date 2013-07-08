@@ -168,12 +168,14 @@ public class mapShowMin2 extends Activity implements
 		ImageView img = new ImageView(this);
 		Bitmap bit = BitmapFactory.decodeResource(getResources(),
 				R.drawable.bt);
-		img.setImageBitmap(bit);
+		Bitmap bit2 = Bitmap.createScaledBitmap(bit, beautyUtils.layoutWidth/2, bit.getHeight(), false);
+		img.setImageBitmap(bit2);
 		if (i == 0) {
 			linearLayouts.get(j).addView(img);
 		} else {
 			linearLayouts.get(j).addView(imageView);
 			linearLayouts.get(j).addView(tv);
+			linearLayouts.get(j).setBackgroundResource(R.drawable.news_item_bg);
 		}
 		imageView.setOnClickListener(new OnClickListener() {
 			@Override

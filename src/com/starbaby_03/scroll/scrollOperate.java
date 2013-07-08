@@ -82,7 +82,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 	private int storeUid;//选择保存图片的uid
 	private int length2 = 0;//当前edittext输入的字符长度
 	private String editStoreName;//输入的新建相册名(区分于没有相册的前提)
-	private String picDescribe="";//照片的描述
+	private String picDescribe="";//相册id
+	private String picNote = "";//相片描述
 	private ArrayList<aboutUsUtils> aboutUsUtils_list;
 	private ArrayList<String> albumname =null;
 	private ArrayList<Integer> albumid = null;
@@ -343,9 +344,9 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 						
 					}
 					//把图片的描述存入到spPic
-					picDescribe = et1.getText().toString();
-					Log.e("picDescribe=", picDescribe);
-					beautyUtils.spPic.edit().putString(beautyUtils.spPicPath, picDescribe).commit();
+					picNote = et1.getText().toString();
+					Log.e("picNote=", picNote);
+					beautyUtils.spPic.edit().putString(beautyUtils.spPicPath, picNote).commit();
 				}
 			});
 			AlertDialog alert = builder.create();
@@ -499,7 +500,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 								try {
 									String contentUrl = new JsonObject().getIMAGEURl(request);
 									if(contentUrl !=null && contentUrl !=""){
-										Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picDescribe, 2);
+										picNote = et1.getText().toString();
+										Login( contentUtils.spGetInfo.getInt("uid", 0), contentUtils.spGetInfo.getString("psw", ""), storeUid,contentUrl, picNote, 2);
 									}
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block

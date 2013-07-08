@@ -3,6 +3,7 @@ package com.starbaby_03.scroll;
 import com.example.starbaby_03.R;
 import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.beautyUtils;
+import com.starbaby_03.utils.saveFile;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -62,15 +63,15 @@ public class showPic extends Activity implements OnClickListener {
 	}
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.scroll_showpic_ibnt1://返回
 			this.finish();
 			break;
-		case R.id.scroll_showpic_ibnt2://分享
+		case R.id.scroll_showpic_ibnt2://分享,情况为从本地分享到线上
 			Intent intent = new Intent(this,scrollOperate.class);
 			intent.putExtra("scroll", "release");
 			ScrollUtils.sharePath = path;
+			saveFile.operateName = path;
 			startActivity(intent);
 			break;
 		}

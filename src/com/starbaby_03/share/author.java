@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.aboutUs.infoCenter;
+import com.starbaby_03.info.user_register;
 import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.main.PLA_AdapterView;
 import com.starbaby_03.net.AsyncHttpGet;
@@ -19,6 +20,8 @@ import com.starbaby_03.net.AsyncHttpPost;
 import com.starbaby_03.net.DefaultThreadPool;
 import com.starbaby_03.net.RequestParameter;
 import com.starbaby_03.net.RequestResultCallback;
+import com.starbaby_03.scroll.scrollOperate;
+import com.starbaby_03.utils.EncodeUtil;
 import com.starbaby_03.utils.JsonObject;
 import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.aboutUsUtils;
@@ -27,6 +30,7 @@ import com.starbaby_03.utils.meshImgUrl;
 
 import android.R.integer;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -43,6 +47,7 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Gallery.LayoutParams;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -69,6 +74,10 @@ public class author extends Activity implements OnClickListener{
 	private Bitmap headBit,Bit;
 	private final int mPageCount = 10;
 	private int mSelection;
+	public int mLastItem;
+	private EditText etView1;
+	private EditText etView2;
+	private AlertDialog alert;
 	private Handler mHandler = new Handler(){
 
 		@Override
@@ -87,7 +96,7 @@ public class author extends Activity implements OnClickListener{
 		}
 		
 	};
-	public int mLastItem;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -239,7 +248,7 @@ public class author extends Activity implements OnClickListener{
 		iBnt1 = (ImageButton) findViewById(R.id.share_authorlist_ibnt1);
 		iBnt2 = (ImageButton) findViewById(R.id.share_authorlist_ibnt3);
 		tv1 = (TextView) findViewById(R.id.share_authorlist_tv1);
-		iv1 = (ImageView) findViewById(R.id.share_authorlist_iv1);
+		iv1 = (ImageView) findViewById(R.id.share_authorlist_iv1);//发帖人头像
 		lv = (ListView) findViewById(R.id.share_authorlist_lv1);
 		et1 = (EditText) findViewById(R.id.share_authorlist_et1);
 		//LOAD动画
@@ -373,11 +382,50 @@ public class author extends Activity implements OnClickListener{
 			if(et1.getText().toString() == null && et1.getText().toString() ==""){
 				Toast.makeText(this, "请输入内容", 1000).show();
 			}else{
-				loginNote(contentUtils.spGetInfo.getInt("uid", 0),contentUtils.spGetInfo.getString("psw", ""),ScrollUtils.picId,et1.getText().toString(),2,0);
-				et1.setText("");
+				if (contentUtils.spGetInfo.contains("psw")) {
+					loginNote(contentUtils.spGetInfo.getInt("uid", 0),contentUtils.spGetInfo.getString("psw", ""),ScrollUtils.picId,et1.getText().toString(),2,0);
+					et1.setText("");
+					startActivity(new Intent(author.this,author.class));
+					author.this.finish();
+				}else{
+					showEnter();
+				}
+//				
+			}
+			break;
+		case R.id.info_enter_view_ibnt1://登入
+			String name = etView1.getText().toString();
+			String pwd = etView2.getText().toString();
+			if(name != null && pwd != null){
+				contentUtils.psw = EncodeUtil.getMD5(pwd.getBytes());
+				if(contentUtils.psw != null || contentUtils.psw !="")
+				contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+				login(name,contentUtils.psw);
+			}
+			break;
+		case R.id.info_enter_view_ibnt2://注册
+			startActivity(new Intent(this,user_register.class));
+			break;
+		case R.id.share_authorlist_iv1://点击发帖人头像
+			if(contentUtils.spGetInfo.getString("psw", contentUtils.psw) ==null){	//	没登入的状态下。点击自己或者别人的头像，都默认进入个人的线上相册，不显示私密相册 
+				
+				
 			}
 			break;
 		}
+	}
+	void showEnter(){
+		AlertDialog.Builder builder = new AlertDialog.Builder(author.this);
+		View view = getLayoutInflater().inflate(R.layout.info_enter_view, null);
+		Button iBntView1 = (Button)view.findViewById(R.id.info_enter_view_ibnt1);
+		Button iBntView2 = (Button)view.findViewById(R.id.info_enter_view_ibnt2);
+		etView1 =  (EditText)view. findViewById(R.id.info_center_view_et1);
+		etView2 =  (EditText)view. findViewById(R.id.info_center_view_et2);
+		builder.setView(view);
+		alert = builder.create();
+		alert.show();
+		iBntView1.setOnClickListener(this);
+		iBntView2.setOnClickListener(this);
 	}
 	void loginNote(int uid,String pwd,String picid,String txt,int sys,int cid){
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
@@ -404,5 +452,73 @@ public class author extends Activity implements OnClickListener{
 			}
 		});
 		DefaultThreadPool.getInstance().execute(post);
+	}
+	// 登入判断
+	public void login(String userName, String userPasword) {
+
+		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
+		parameterList.add(new RequestParameter("username", userName));
+		parameterList.add(new RequestParameter("pwd", userPasword));
+		AsyncHttpPost httpost = new AsyncHttpPost(null, contentUtils.enterUrl,
+				parameterList, new RequestResultCallback() {
+
+					@Override
+					public void onSuccess(Object o) {
+						// TODO Auto-generated method stub
+						final String result = (String) o;
+						author.this.runOnUiThread(new Runnable() {
+
+							@Override
+							public void run() {
+								// TODO Auto-generated method stub
+								try {
+									contentUtils.msg = new JsonObject()
+											.getMSG(result);
+									if (contentUtils.msg == 1) {
+										contentUtils.psw = etView2.getText()
+												.toString();
+										contentUtils.uid = new JsonObject()
+												.getUID(result);
+										contentUtils.spGetInfo
+												.edit()
+												.putInt("uid", contentUtils.uid)
+												.commit();
+										contentUtils.username = new JsonObject()
+												.getUSERNAME(result);
+										contentUtils.spGetInfo
+												.edit()
+												.putString("username",
+														contentUtils.username)
+												.commit();
+										contentUtils.avatar = new JsonObject()
+												.getAVATAR(result);
+										contentUtils.spinfo
+												.edit()
+												.putString("username",
+														contentUtils.username)
+												.commit();
+										contentUtils.spinfo
+												.edit()
+												.putString("avatar",
+														contentUtils.avatar)
+												.commit();
+									}
+								} catch (JSONException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+								Log.e("result", result);
+								alert.dismiss();
+							}
+						});
+					}
+
+					@Override
+					public void onFail(Exception e) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+		DefaultThreadPool.getInstance().execute(httpost);
 	}
 }

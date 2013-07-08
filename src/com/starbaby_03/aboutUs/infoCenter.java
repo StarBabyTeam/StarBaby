@@ -12,7 +12,6 @@ import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.Gallery.mapStorage;
-import com.starbaby_03.aboutUs.infoCenter.StaggeredAdapter.ViewHolder;
 import com.starbaby_03.main.HotInfo;
 import com.starbaby_03.main.Helper;
 import com.starbaby_03.main.ImageFetcher;
@@ -129,13 +128,13 @@ public class infoCenter extends Activity implements IXListViewListener,
 		@Override
 		protected void onPostExecute(List<HotInfo> result) {
 			if (mType == 1) {// 下拉
-				mAdapter.addItemTop(result);
-				mAdapter.notifyDataSetChanged();
-				mAdapterView.stopRefresh();
+					mAdapter.addItemTop(result);
+					mAdapter.notifyDataSetChanged();
+					mAdapterView.stopRefresh();
 			} else if (mType == 2) {// 加载更多
-				mAdapterView.stopLoadMore();
-				mAdapter.addItemLast(result);
-				mAdapter.notifyDataSetChanged();
+					mAdapterView.stopLoadMore();
+					mAdapter.addItemLast(result);
+					mAdapter.notifyDataSetChanged();
 			} else if (mType == 3) {// refresh
 				mAdapterView.stopLoadMore();
 				mAdapter.addItemRefresh(result);
@@ -148,53 +147,57 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		public List<HotInfo> parseNewsJSON(String url) throws IOException {
-			duitangs = new ArrayList<HotInfo>();
-			String result = "";
-			JSONArray picJson = null;
-			JSONArray blogsJson2 = null;
-			if (Helper.checkConnection(mContext)) {
-				try {
-					result = Helper.getStringFromUrl(url);
-					Log.e("json222=", result);
-				} catch (IOException e) {
-					Log.e("IOException is : ", e.toString());
-					e.printStackTrace();
-					return duitangs;
-				}
-			}
-			if (null != result) {
-				try {
-					JSONObject json = new JSONObject(result);
-					JSONArray datalistArray = json.getJSONArray("datalist");
-					for (int i = 0; i < datalistArray.length(); i++) {
-						HotInfo info = new HotInfo();
-						JSONObject imgObject = datalistArray.getJSONObject(i);
-						JSONArray commentlistArray = imgObject
-								.getJSONArray("commentlist");
-						ArrayList<String> authorList = new ArrayList<String>();
-						ArrayList<String> commentList = new ArrayList<String>();
-						for (int j = 0; j < commentlistArray.length(); j++) {
-							JSONObject lastJson = commentlistArray
-									.getJSONObject(j);
-							authorList.add(lastJson.isNull("author") ? ""
-									: lastJson.getString("author"));
-							commentList.add(lastJson.isNull("message") ? ""
-									: lastJson.getString("message"));
+				duitangs = new ArrayList<HotInfo>();
+				if(shortUrl != ""){
+					String result = "";
+					JSONArray picJson = null;
+					JSONArray blogsJson2 = null;
+					if (Helper.checkConnection(mContext)) {
+						try {
+							result = Helper.getStringFromUrl(url);
+							Log.e("json222=", result);
+						} catch (IOException e) {
+							Log.e("IOException is : ", e.toString());
+							e.printStackTrace();
+							return duitangs;
 						}
-						info.setAuthorList(authorList);
-						info.setCommentList(commentList);
-						info.setIsrc(imgObject.isNull("img") ? "" : imgObject
-								.getString("img"));
-						info.setPicId(imgObject.isNull("picid") ? ""
-								: imgObject.getString("picid"));
-						info.setHeight(170);
-						duitangs.add(info);
 					}
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					if (null != result) {
+						try {
+							JSONObject json = new JSONObject(result);
+							JSONArray datalistArray = json.getJSONArray("datalist");
+							for (int i = 0; i < datalistArray.length(); i++) {
+								HotInfo info = new HotInfo();
+								JSONObject imgObject = datalistArray.getJSONObject(i);
+								JSONArray commentlistArray = imgObject
+										.getJSONArray("commentlist");
+								ArrayList<String> authorList = new ArrayList<String>();
+								ArrayList<String> commentList = new ArrayList<String>();
+								for (int j = 0; j < commentlistArray.length(); j++) {
+									JSONObject lastJson = commentlistArray
+											.getJSONObject(j);
+									authorList.add(lastJson.isNull("author") ? ""
+											: lastJson.getString("author"));
+									commentList.add(lastJson.isNull("message") ? ""
+											: lastJson.getString("message"));
+								}
+								info.setAuthorList(authorList);
+								info.setCommentList(commentList);
+								info.setIsrc(imgObject.isNull("img") ? "" : imgObject
+										.getString("img"));
+								info.setPicId(imgObject.isNull("picid") ? ""
+										: imgObject.getString("picid"));
+								info.setHeight(300);
+								duitangs.add(info);
+							}
+						} catch (JSONException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				}else{
+					Log.e("shorUlr=", shortUrl);
 				}
-			}
 			return duitangs;
 		}
 	}
@@ -204,15 +207,15 @@ public class infoCenter extends Activity implements IXListViewListener,
 	 * 
 	 * @param pageindex
 	 * @param type
-	 *            1为下拉刷新 2为加载更多
+	 *            1为下拉刷新 2为加载更多3第一次加载
 	 */
 	private void AddItemToContainer(int pageindex, int type, int page) {
 		if (task.getStatus() != Status.RUNNING) {
 			// 接口地址
-			String url = shortUrl + page;
-			ContentTask task = new ContentTask(this, type);
-			Log.e("url=", url);
-			task.execute(url);
+				String url = shortUrl + page;
+				ContentTask task = new ContentTask(this, type);
+				Log.e("url=", url);
+				task.execute(url);
 		}
 	}
 
@@ -260,13 +263,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 			return convertView;
 		}
 
-		class ViewHolder {
-			ScaleImageView imageView;
-			TextView contentView;
-			TextView timeView;
-
-		}
-
 		@Override
 		public int getCount() {
 			return mInfos.size();
@@ -283,13 +279,13 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		public void addItemRefresh(List<HotInfo> datas) {
-			if (FLAG == 2) {
+//			if (FLAG == 2) {
 				mInfos.clear();
 				mInfos.addAll(datas);
-			} else if (FLAG == 1) {
-				mInfos.addAll(datas);
-				mInfos.clear();
-			}
+//			} else if (FLAG == 1) {
+//				mInfos.addAll(datas);
+//				mInfos.clear();
+//			}
 
 		}
 
@@ -315,7 +311,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 		listener();
 		InitViewPager();
 		gv.setOnItemClickListener(this);
-		ViewHolder holder = null;
 		
 		mImageFetcher.setExitTasksEarly(false);
 		mAdapterView.setAdapter(mAdapter);
@@ -327,10 +322,12 @@ public class infoCenter extends Activity implements IXListViewListener,
 				startActivity(new Intent(infoCenter.this,author.class));
 			}
 		});
+		onLoad();
+	}
+	void onLoad(){
 		int current_page_refresh = 1;
 		AddItemToContainer(currentPage, 3 ,current_page_refresh);
 	}
-
 	private void listener() {
 		iBnt1.setOnClickListener(this);
 		tv3.setOnClickListener(this);
@@ -359,27 +356,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 		tv5.setText(contentUtils.spGetInfo.getString("username", ""));
 		tv4.setText("\n" + "私密" + "\n" + "相册");
 	}
-
-	// 第一次导入刷新
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
-	// 下拉刷新
-	@Override
-	public void onRefresh() {
-		new_current_page_down = 1;
-		AddItemToContainer(++currentPage, 1, new_current_page_down);
-	}
-
-	// 上拉加载
-	@Override
-	public void onLoadMore() {
-		new_current_page_up = new_current_page_up + 1;
-		AddItemToContainer(++currentPage, 2, new_current_page_up);
-	}
-
 	private void InitViewPager() {
 		inflateGrideView();
 
@@ -405,6 +381,27 @@ public class infoCenter extends Activity implements IXListViewListener,
 //		}
 //		pager.setCurrentItem(0);
 	}
+	// 第一次导入刷新
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+
+	// 下拉刷新
+	@Override
+	public void onRefresh() {
+		new_current_page_down = 1;
+		AddItemToContainer(++currentPage, 1, new_current_page_down);
+	}
+
+	// 上拉加载
+	@Override
+	public void onLoadMore() {
+		new_current_page_up = new_current_page_up + 1;
+		AddItemToContainer(++currentPage, 2, new_current_page_up);
+	}
+
+	
 
 	/**
 	 * JSON解析 读取线上相册
@@ -427,8 +424,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 						try {
 							aboutUsUtils_list = new ArrayList<aboutUsUtils>();
 							JSONObject json = new JSONObject(result);
-							Log.e("json=", json + "");
-							Log.e("result=", result + "");
 							albumsize = new JsonObject().albumsize(result);
 							JSONArray img = json.getJSONArray("datalist");
 							if (albumsize > 1) {
@@ -444,11 +439,11 @@ public class infoCenter extends Activity implements IXListViewListener,
 									Log.e("aboutUsUtils_list.size()=", aboutUsUtils_list.size()+"");
 									pager.setCurrentItem(0);// 展示相册
 								}
-							} else {
-								int albumid = json.getInt("json");
-								currentUrl = contentUtils.photoList + albumid
-										+ "/" + 1;
-								onResume();
+							} else if(albumsize == 1){
+								int albumid = json.getInt("albumid");
+								shortUrl = contentUtils.photoList + albumid+ "/" ;
+//										+ "/" + 1;
+								onLoad();
 								pager.setCurrentItem(1);// 相册为1个，展示素有图片。或者相册为空
 							}
 						} catch (JSONException e) {
@@ -479,7 +474,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 		gv = (GridView) view1
 				.findViewById(R.id.aboutus_infocenter_store_gridview);
 		getFrame(contentUtils.uid, 1);
-		shortUrl = contentUtils.photoList + "323485" + "/";//初始化BUG
+//		shortUrl = contentUtils.photoList + "323485" + "/";//初始化BUG
 
 	}
 

@@ -390,7 +390,6 @@ public class user_enter extends Activity implements OnClickListener {
 		case R.id.info_enter_imagebutton3:
 			Intent intent2 = new Intent(this, user_register.class);
 			startActivity(intent2);
-//			this.finish();
 			break;
 		case R.id.info_enter_imagebutton:
 			if (ck.isChecked()) {

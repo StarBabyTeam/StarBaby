@@ -80,6 +80,7 @@
         <activity android:name="com.starbaby_03.scroll.showPic"></activity>
         <activity android:name="com.starbaby_03.share.author"></activity>
         <activity android:name="com.starbaby_03.camera.operatePic"></activity>
+        <activity android:name="com.starbaby_03.aboutUs.publisherCenter"></activity>
     </application>
 
 </manifest>

@@ -179,7 +179,7 @@ public class MainActivity extends FragmentActivity implements
 						info.setIsrc(picObj.isNull("img") ? "" : picObj
 								.getString("img"));
 						info.setPicId(picObj.isNull("picid") ? "" : picObj.getString("picid"));
-						info.setHeight(170);
+						info.setHeight(300);
 						duitangs.add(info);
 					}
 				}
@@ -348,12 +348,17 @@ public class MainActivity extends FragmentActivity implements
 					&& duitangInfo.getCommentList().size() == 1) {
 				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
+				holder.timeView.setVisibility(8);
 			} else if (duitangInfo.getAuthorList().size() > 1
 					&& duitangInfo.getCommentList().size() > 1) {
 				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
 				holder.timeView.setText(duitangInfo.getAuthorList().get(1)
 						+ ":" + duitangInfo.getCommentList().get(1));
+			}
+			else{
+				holder.contentView.setVisibility(8);
+				holder.timeView.setVisibility(8);
 			}
 			if(duitangInfo.getIsrc().length()!=0){
 				mImageFetcher.loadImage(duitangInfo.getIsrc(), holder.imageView);
@@ -430,25 +435,22 @@ public class MainActivity extends FragmentActivity implements
 					&& duitangInfo.getCommentList().size() == 1) {
 				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
+				timeView.setVisibility(8);
 			} else if (duitangInfo.getAuthorList().size() > 1
 					&& duitangInfo.getCommentList().size() > 1) {
 				contentView.setText(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
 				timeView.setText(duitangInfo.getAuthorList().get(1)
 						+ ":" + duitangInfo.getCommentList().get(1));
+			}else{
+				contentView.setVisibility(8);
+				timeView.setVisibility(8);
 			}
 			if(duitangInfo.getIsrc().length()!=0){
 				mImageFetcher.loadImage(duitangInfo.getIsrc(), imageView);
 			}
 			return convertView;
 		}
-
-//	    class ViewHolder {
-//			ScaleImageView imageView;
-//			TextView contentView;
-//			TextView timeView;
-//
-//		}
 
 		@Override
 		public int getCount() {
