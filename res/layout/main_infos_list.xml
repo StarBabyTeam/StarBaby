@@ -15,6 +15,7 @@
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/main_pop"
         >
 
         <TextView
@@ -25,6 +26,7 @@
             android:layout_height="wrap_content"
             android:singleLine="false"
             android:textColor="#656565"
+            android:textSize="10dp"
             android:ellipsize="marquee">
             
         </TextView>
@@ -37,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
             android:ellipsize="marquee"
+            android:textSize="10dp"
             android:textColor="#656565" />
     </RelativeLayout>
 </LinearLayout>

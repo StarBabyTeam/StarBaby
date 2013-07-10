@@ -24,6 +24,7 @@ import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.main.HotInfo;
 import com.starbaby_03.main.Helper;
 import com.starbaby_03.main.ImageFetcher;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.main.ScaleImageView;
 import com.starbaby_03.main.XListView;
 import com.starbaby_03.main.XListView.IXListViewListener;
@@ -316,5 +317,14 @@ public class mapShowMin2 extends Activity implements
 			break;
 		}
 	}
-
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		this.finish();
+	}
 }

@@ -1,6 +1,8 @@
 package com.starbaby_03.scroll;
 
 import com.example.starbaby_03.R;
+import com.starbaby_03.camera.mCamera;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.beautyUtils;
 import com.starbaby_03.utils.saveFile;
@@ -29,7 +31,6 @@ public class showPic extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.scroll_showpic);
 		init();
@@ -37,13 +38,11 @@ public class showPic extends Activity implements OnClickListener {
 	}
 
 	private void listener() {
-		// TODO Auto-generated method stub
 		iBnt1.setOnClickListener(this);
 		iBnt2.setOnClickListener(this);
 	}
 
 	private void init() {                                          
-		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt1);
 		iBnt2 = (ImageButton) findViewById(R.id.scroll_showpic_ibnt2);
 		iv1 = (ImageView) findViewById(R.id.srcoll_showpic_iv1);
@@ -76,5 +75,14 @@ public class showPic extends Activity implements OnClickListener {
 			break;
 		}
 	}
-
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		this.finish();
+	}
 }

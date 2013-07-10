@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.aboutUs.infoCenter;
+import com.starbaby_03.camera.mCamera;
+import com.starbaby_03.info.user_enter;
 import com.starbaby_03.info.user_register;
 import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.main.PLA_AdapterView;
@@ -27,6 +29,7 @@ import com.starbaby_03.utils.ScrollUtils;
 import com.starbaby_03.utils.aboutUsUtils;
 import com.starbaby_03.utils.contentUtils;
 import com.starbaby_03.utils.meshImgUrl;
+import com.starbaby_03.utils.weiboUtils;
 
 import android.R.integer;
 import android.app.Activity;
@@ -35,15 +38,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.Gallery.LayoutParams;
@@ -51,6 +63,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AbsListView.OnScrollListener;
@@ -69,15 +82,18 @@ public class author extends Activity implements OnClickListener{
 	private String avatar;
 	private String picurl;
 	private String replies;//总回复数
+	private String authorId;//	发帖人的uid
 	public  int totalPage;
 	private int mCurPage;
 	private Bitmap headBit,Bit;
 	private final int mPageCount = 10;
+	float onePage = 10;
 	private int mSelection;
 	public int mLastItem;
 	private EditText etView1;
 	private EditText etView2;
 	private AlertDialog alert;
+	private ProgressBar pb;
 	private Handler mHandler = new Handler(){
 
 		@Override
@@ -87,31 +103,39 @@ public class author extends Activity implements OnClickListener{
 			tv1.setText(author);
 			iv1.setImageBitmap(headBit);
 			headIv.setImageBitmap(Bit);
-			repliesTv.setText(replies+" "+"条评论");
+			
 			lv.addHeaderView(picView );
 			mCurPage = 1;//初始化页数为1，可返回回复数为0
-			float onePage = 10;
+			
 			totalPage = (int) Math.ceil(((float)Integer.parseInt(replies))/onePage);//一共返回几页
 			loginReply(Integer.parseInt(ScrollUtils.picId),mCurPage);
 		}
 		
 	};
+	private ArrayList<String> authorList;
+	private ArrayList<String> avatarList;
+	private ArrayList<String> msgList;
+	private ArrayList<String> timeList;
+	private ArrayList<String> authorIdList;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		show();
-	}
-	void show(){
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.share_authorlist);
 		init();
 		json(contentUtils.getPicIdUrl,Integer.parseInt(ScrollUtils.picId));
 	}
+	/**
+	 * @param picid
+	 * @param page
+	 */
 	void loginReply(int picid,int page){
-		final ArrayList<String> authorList = new ArrayList<String>();
-		final ArrayList<String> avatarList = new ArrayList<String>();
-		final ArrayList<String> msgList  = new ArrayList<String>();
-		final ArrayList<String> timeList = new ArrayList<String>();
+		authorList = new ArrayList<String>();
+		avatarList = new ArrayList<String>();
+		msgList  = new ArrayList<String>();
+		timeList = new ArrayList<String>();
+		authorIdList = new ArrayList<String>();
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 		AsyncHttpGet get = new AsyncHttpGet(null, contentUtils.replyPicUrl + picid
 				+ "/" + page, parameterList, new RequestResultCallback() {
@@ -122,6 +146,8 @@ public class author extends Activity implements OnClickListener{
 								try {
 									JSONObject json = new JSONObject(result);
 									int pagesize = json.getInt("pagesize");// 当前返回页面的评论条数
+									repliesTv.setText(pagesize+" "+"条评论");
+									totalPage = (int) Math.ceil(((float)pagesize)/onePage);//一共返回几页
 									Log.e("pagesize=", pagesize+"");
 									JSONArray datalist = json
 											.getJSONArray("datalist");
@@ -132,6 +158,7 @@ public class author extends Activity implements OnClickListener{
 										avatarList.add(obj.getString("avatar"));
 										msgList.add(obj.getString("message"));
 										timeList.add(obj.getString("dataline"));
+										authorIdList.add(obj.getString("authorid"));
 										Log.e("result3=", obj.getString("author")+":"+obj.getString("avatar")+":"+obj.getString("message")+":"+obj.getString("dataline"));
 									}
 									for (int j = 0; j < authorList.size(); j++) {
@@ -139,7 +166,8 @@ public class author extends Activity implements OnClickListener{
 												avatarList.get(j).toString(),
 												authorList.get(j).toString(),
 												msgList.get(j).toString(),
-												timeList.get(j).toString());
+												timeList.get(j).toString(),
+												authorIdList.get(j).toString());
 										list.add(aList);
 									}
 									adapter = new lazyAdapter(author.this,list);
@@ -162,12 +190,17 @@ public class author extends Activity implements OnClickListener{
 		});
 		DefaultThreadPool.getInstance().execute(get);
 	}
-	
+	/**
+	 * 回复信息  上拉更多
+	 * @param picid
+	 * @param page
+	 */
 	void loginReplyMore(int picid,int page){
 		final ArrayList<String> authorList = new ArrayList<String>();
 		final ArrayList<String> avatarList = new ArrayList<String>();
 		final ArrayList<String> msgList  = new ArrayList<String>();
 		final ArrayList<String> timeList = new ArrayList<String>();
+		final ArrayList<String> authorIdList = new ArrayList<String>();
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 		AsyncHttpGet get = new AsyncHttpGet(null, contentUtils.replyPicUrl + picid
 				+ "/" + page, parameterList, new RequestResultCallback() {
@@ -188,6 +221,7 @@ public class author extends Activity implements OnClickListener{
 										avatarList.add(obj.getString("avatar"));
 										msgList.add(obj.getString("message"));
 										timeList.add(obj.getString("dataline"));
+										authorIdList.add(obj.getString("authorid"));
 										Log.e("result3=", obj.getString("author")+":"+obj.getString("avatar")+":"+obj.getString("message")+":"+obj.getString("dataline"));
 									}
 									for (int j = 0; j < authorList.size(); j++) {
@@ -195,11 +229,11 @@ public class author extends Activity implements OnClickListener{
 												avatarList.get(j).toString(),
 												authorList.get(j).toString(),
 												msgList.get(j).toString(),
-												timeList.get(j).toString());
+												timeList.get(j).toString(),
+												authorIdList.get(j).toString());
 										list.add(aList);
 									}
 									adapter.notifyDataSetChanged();
-									//lv.setSelection(mSelection);
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -240,9 +274,6 @@ public class author extends Activity implements OnClickListener{
 			
 		}
     }
-    
-    
-    
 	private void init() {
 		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.share_authorlist_ibnt1);
@@ -251,6 +282,8 @@ public class author extends Activity implements OnClickListener{
 		iv1 = (ImageView) findViewById(R.id.share_authorlist_iv1);//发帖人头像
 		lv = (ListView) findViewById(R.id.share_authorlist_lv1);
 		et1 = (EditText) findViewById(R.id.share_authorlist_et1);
+		pb = (ProgressBar) findViewById(R.id.share_aboutlist__progressbar);
+		pb.setVisibility(View.GONE);
 		//LOAD动画
 		loadingView = getLayoutInflater().inflate(R.layout.share_loading, null);
 		//表头
@@ -263,7 +296,7 @@ public class author extends Activity implements OnClickListener{
 		iv1.setOnClickListener(this);
 	}
 	/**
-	 * 加载评论概述
+	 * 发帖信息 JSON解析
 	 * @param shortUrl
 	 * @param picId
 	 */
@@ -276,16 +309,19 @@ public class author extends Activity implements OnClickListener{
 				final String result = (String)o;
 				author.this.runOnUiThread(new Runnable() {
 				
+					
+
 					@Override
 					public void run() {
 						try {
 							JSONObject json = new JSONObject(result);
 							JSONObject datalist = json.getJSONObject("datalist");
-							author = datalist.getString("author");//发布人
+							author = datalist.getString("author");//发布人name
 							avatar = datalist.getString("avatar"); //发布人头像
 							picurl = datalist.getString("picurl"); //照片URL
 							replies = datalist.getString("replies");//评论数
-							Log.e("json", author+":"+avatar+":"+picurl+":"+replies);
+							authorId = datalist.getString("authorid");//发帖人uid
+							
 							Thread thread = new Thread(){
 
 								@Override
@@ -317,7 +353,7 @@ public class author extends Activity implements OnClickListener{
 		DefaultThreadPool.getInstance().execute(get);
 	}
 	/**
-	 * 回复布局
+	 * 回复LIST的布局
 	 * @author Administrator
 	 *
 	 */
@@ -357,40 +393,75 @@ public class author extends Activity implements OnClickListener{
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup arg2) {
-			// TODO Auto-generated method stub
 			View vi = convertView;
 			if (convertView == null)
 				vi = inflater.inflate(R.layout.share_authorlist_view, null);
 			note = (TextView) vi.findViewById(R.id.share_authorlist_view_tv1);
-			image = (ImageView) vi.findViewById(R.id.share_authorlist_view_iv1);
+			image = (ImageView) vi.findViewById(R.id.share_authorlist_view_iv1);//回复人的头像
 			time = (TextView) vi.findViewById(R.id.share_authorlist_view_tv2);
-			note.setText(totalList.get(position).name + ":"
+			SpannableString spStr = new SpannableString(totalList.get(position).name + ":"
 					+ totalList.get(position).msg);
+			spStr.setSpan(new ForegroundColorSpan(Color.BLUE), 0, totalList.get(position).name.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+			note.setText(spStr);
 			time.setText(totalList.get(position).time + "          " + position);
 			imageLoader.DisplayImage(totalList.get(position).url, image);
+			image.setOnClickListener(author.this);
+			addListener(vi,position);
 			return vi;
+		}
+		private void addListener(View view,final int position) {
+			image.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Toast.makeText(author.this,"这是点击的第"+position , 1000).show();
+					if(contentUtils.spGetInfo.getString("psw", "") ==null ||contentUtils.spGetInfo.getString("psw", "") == ""){	
+						//	没登入的状态下。点击自己或者别人的头像，都默认进入个人的线上相册，不显示私密相册 
+						contentUtils.Visiable =2;
+						startActivity(new Intent(author.this,infoCenter.class));
+					}else if((contentUtils.spGetInfo.getString("psw", "") !=null ||contentUtils.spGetInfo.getString("psw", "") != "") && contentUtils.spGetInfo.getInt("uid",0) != Integer.parseInt(list.get(position).authorId)){
+						//登入的状态下。查看他人的信息
+						contentUtils.Visiable =2;
+						startActivity(new Intent(author.this,infoCenter.class));
+					}else if((contentUtils.spGetInfo.getString("psw", "") !=null ||contentUtils.spGetInfo.getString("psw", "") != "") && contentUtils.spGetInfo.getInt("uid",0) == Integer.parseInt(list.get(position).authorId)){
+						//登入状态下，查看本人头像信息
+						contentUtils.Visiable =1;
+						startActivity(new Intent(author.this,infoCenter.class));
+					}
+					contentUtils.authorId = list.get(position).authorId;
+					contentUtils.authorUrl = list.get(position).url;
+					contentUtils.authorName = list.get(position).name;
+				}
+			});
 		}
 
 	}
+	/**
+	 * 按钮监听事件
+	 */
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.share_authorlist_ibnt1:
 			this.finish();
 			break;
-		case R.id.share_authorlist_ibnt3:
+		case R.id.share_authorlist_ibnt3://回复监听
 			if(et1.getText().toString() == null && et1.getText().toString() ==""){
 				Toast.makeText(this, "请输入内容", 1000).show();
 			}else{
-				if (contentUtils.spGetInfo.contains("psw")) {
-					loginNote(contentUtils.spGetInfo.getInt("uid", 0),contentUtils.spGetInfo.getString("psw", ""),ScrollUtils.picId,et1.getText().toString(),2,0);
-					et1.setText("");
-					startActivity(new Intent(author.this,author.class));
-					author.this.finish();
-				}else{
+				//发飙回复时 对登入进行判断
+				if (contentUtils.sp.getString("psw", "") == "" || contentUtils.sp.getString("psw", "") == null) {
 					showEnter();
+				}else{
+					if(et1.getText().toString() == null || et1.getText().toString() == ""){
+						Toast.makeText(this, "请输入内容", 1000).show();
+					}else{
+						pb.setVisibility(View.VISIBLE);
+						loginNote(contentUtils.spGetInfo.getInt("uid", 0),contentUtils.spGetInfo.getString("psw", ""),ScrollUtils.picId,et1.getText().toString(),2,0);
+						et1.setText("");
+						CloseKeyBoard();
+					}
 				}
-//				
 			}
 			break;
 		case R.id.info_enter_view_ibnt1://登入
@@ -398,22 +469,41 @@ public class author extends Activity implements OnClickListener{
 			String pwd = etView2.getText().toString();
 			if(name != null && pwd != null){
 				contentUtils.psw = EncodeUtil.getMD5(pwd.getBytes());
-				if(contentUtils.psw != null || contentUtils.psw !="")
-				contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
-				login(name,contentUtils.psw);
+				if(contentUtils.psw != null && contentUtils.psw !=""){
+					contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+					login(name,contentUtils.psw);
+				}
 			}
 			break;
 		case R.id.info_enter_view_ibnt2://注册
 			startActivity(new Intent(this,user_register.class));
 			break;
 		case R.id.share_authorlist_iv1://点击发帖人头像
-			if(contentUtils.spGetInfo.getString("psw", contentUtils.psw) ==null){	//	没登入的状态下。点击自己或者别人的头像，都默认进入个人的线上相册，不显示私密相册 
-				
-				
+			Toast.makeText(this, "u touch me", 1000).show();
+			Log.e("contentUtils.spGetInfo.getInt=", contentUtils.spGetInfo.getInt("uid",0)+"");
+			Log.e("Integer.parseInt(authorId)", Integer.parseInt(authorId)+"");
+			if(contentUtils.spGetInfo.getString("psw", "") ==null ||contentUtils.spGetInfo.getString("psw", "") == ""){	
+				//	没登入的状态下。点击自己或者别人的头像，都默认进入个人的线上相册，不显示私密相册 
+				startActivity(new Intent(author.this,infoCenter.class));
+				contentUtils.Visiable =2;
+			}else if((contentUtils.spGetInfo.getString("psw", "") !=null ||contentUtils.spGetInfo.getString("psw", "") != "") && contentUtils.spGetInfo.getInt("uid",0) != Integer.parseInt(authorId)){
+				//登入的状态下。查看他人的信息
+				startActivity(new Intent(author.this,infoCenter.class));
+				contentUtils.Visiable =2;
+			}else if((contentUtils.spGetInfo.getString("psw", "") !=null ||contentUtils.spGetInfo.getString("psw", "") != "") && contentUtils.spGetInfo.getInt("uid",0) == Integer.parseInt(authorId)){
+				//登入状态下，查看本人头像信息
+				startActivity(new Intent(author.this,infoCenter.class));
+				contentUtils.Visiable =1;
 			}
+			contentUtils.authorId = authorId;
+			contentUtils.authorUrl = avatar;
+			contentUtils.authorName = author;
 			break;
 		}
 	}
+	/**
+	 * 展示登入（发回复，未登入）
+	 */
 	void showEnter(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(author.this);
 		View view = getLayoutInflater().inflate(R.layout.info_enter_view, null);
@@ -427,6 +517,16 @@ public class author extends Activity implements OnClickListener{
 		iBntView1.setOnClickListener(this);
 		iBntView2.setOnClickListener(this);
 	}
+	/**
+	 * 回复主题
+	 * 
+	 * @param uid
+	 * @param pwd
+	 * @param picid
+	 * @param txt
+	 * @param sys
+	 * @param cid
+	 */
 	void loginNote(int uid,String pwd,String picid,String txt,int sys,int cid){
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
 		parameterList.add(new RequestParameter("uid",uid+""));
@@ -442,6 +542,13 @@ public class author extends Activity implements OnClickListener{
 				author.this.runOnUiThread(new Runnable() {
 					public void run() {
 						Log.e("resultNote=", result);
+						list.clear();
+						mCurPage = 1;//初始化页数为1，可返回回复数为0
+//						float onePage = 10;
+//						int reply = Integer.parseInt(replies) + 1;
+//						totalPage = (int) Math.ceil(((float)reply)/onePage);//一共返回几页
+						loginReply(Integer.parseInt(ScrollUtils.picId),mCurPage);
+						pb.setVisibility(View.GONE);
 					}
 				});
 			}
@@ -453,7 +560,12 @@ public class author extends Activity implements OnClickListener{
 		});
 		DefaultThreadPool.getInstance().execute(post);
 	}
-	// 登入判断
+	/**
+	 * 回复主题时
+	 * 登入判断
+	 * @param userName
+	 * @param userPasword
+	 */
 	public void login(String userName, String userPasword) {
 
 		ArrayList<RequestParameter> parameterList = new ArrayList<RequestParameter>();
@@ -470,45 +582,46 @@ public class author extends Activity implements OnClickListener{
 
 							@Override
 							public void run() {
-								// TODO Auto-generated method stub
 								try {
-									contentUtils.msg = new JsonObject()
-											.getMSG(result);
+									contentUtils.msg = new JsonObject().getMSG(result);
 									if (contentUtils.msg == 1) {
-										contentUtils.psw = etView2.getText()
-												.toString();
-										contentUtils.uid = new JsonObject()
-												.getUID(result);
-										contentUtils.spGetInfo
-												.edit()
-												.putInt("uid", contentUtils.uid)
-												.commit();
-										contentUtils.username = new JsonObject()
-												.getUSERNAME(result);
-										contentUtils.spGetInfo
-												.edit()
-												.putString("username",
-														contentUtils.username)
-												.commit();
-										contentUtils.avatar = new JsonObject()
-												.getAVATAR(result);
-										contentUtils.spinfo
-												.edit()
-												.putString("username",
-														contentUtils.username)
-												.commit();
-										contentUtils.spinfo
-												.edit()
-												.putString("avatar",
-														contentUtils.avatar)
-												.commit();
+//										contentUtils.psw = editText2.getText().toString();
+										contentUtils.uid = new JsonObject().getUID(result);
+										contentUtils.authorId = new JsonObject().getUID(result)+"";
+										contentUtils.username = new JsonObject().getUSERNAME(result);
+										contentUtils.avatar = new JsonObject().getAVATAR(result);
+										contentUtils.authorUrl = new JsonObject().getAVATAR(result);
+										contentUtils.authorName = new JsonObject().getUSERNAME(result);
+										
+										contentUtils.sp.edit().putString("username",contentUtils.username).commit();
+										contentUtils.sp.edit().putString("psw",contentUtils.psw).commit();
+										
+										contentUtils.spinfo.edit().putString("username",contentUtils.username).commit();
+										contentUtils.spinfo.edit().putString("avatar",contentUtils.avatar).commit();
+										
+										contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();
+										contentUtils.spGetInfo.edit().putString("username", contentUtils.username).commit();
+										contentUtils.spGetInfo.edit().putString("avatar", contentUtils.avatar).commit();
+										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+										
+										contentUtils.Visiable = 1;
+									} else if (contentUtils.msg == -4) {
+										Toast.makeText(author.this,
+												"用户信息不存在", 1000).show();
+									} else if (contentUtils.msg == -5) {
+										Toast.makeText(author.this, "密码错误",
+												1000).show();
+									} else {
+										Toast.makeText(author.this, "未知错误",
+												1000).show();
 									}
+
 								} catch (JSONException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								Log.e("result", result);
 								alert.dismiss();
+								Log.e("result", result);
 							}
 						});
 					}
@@ -520,5 +633,32 @@ public class author extends Activity implements OnClickListener{
 					}
 				});
 		DefaultThreadPool.getInstance().execute(httpost);
+	}
+	
+	/**
+	 * (non-Javadoc)点击空白处 关闭软件盘
+	 * @see android.app.Activity#onTouchEvent(android.view.MotionEvent)
+	 */
+	// 监听点击屏幕上任何位置软键盘消失
+    public void CloseKeyBoard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(et1.getWindowToken(), 0);
+
+    }
+
+    // 监听点击屏幕上任何位置软键盘消失
+    public boolean onTouchEvent(MotionEvent event) {
+        CloseKeyBoard();
+        return super.onTouchEvent(event);
+    }
+    /**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		this.finish();
 	}
 }

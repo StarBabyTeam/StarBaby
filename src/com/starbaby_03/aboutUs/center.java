@@ -81,7 +81,6 @@ public class center extends Activity implements OnTouchListener,
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			switch (msg.what) {
 			case 1:
 				imgView1.setImageBitmap(headbit);
@@ -101,22 +100,14 @@ public class center extends Activity implements OnTouchListener,
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.aboutus_center);
-//		StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-//				.detectDiskReads().detectDiskWrites().detectNetwork()
-//				.penaltyLog().build());
-//		StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-//				.detectLeakedSqlLiteObjects().detectLeakedClosableObjects()
-//				.penaltyLog().penaltyDeath().build());
 		init();
 		listener();
 	}
 
 	private void init() {
-		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_center_imagebutton);
 		bnt1 = (Button) findViewById(R.id.aboutus_center_button1);
 		imgView1 = (ImageView) findViewById(R.id.aboutus_center_imageview2);
@@ -131,7 +122,6 @@ public class center extends Activity implements OnTouchListener,
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					Message msg = new Message();
 					msg.what = 1;
 					headbit = new meshImgUrl().returnBitMap(contentUtils.spinfo
@@ -165,7 +155,6 @@ public class center extends Activity implements OnTouchListener,
 	}
 
 	private void listener() {
-		// TODO Auto-generated method stub
 		textView2.setOnTouchListener(this);
 		textView2.setOnClickListener(this);
 		textView3.setOnTouchListener(this);
@@ -178,7 +167,6 @@ public class center extends Activity implements OnTouchListener,
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		// TODO Auto-generated method stub
 		switch (event.getAction() & MotionEvent.ACTION_MASK) {
 		case MotionEvent.ACTION_DOWN:
 			if (v.getId() == R.id.aboutus_center_textview2) {
@@ -208,7 +196,6 @@ public class center extends Activity implements OnTouchListener,
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 			NetworkInfo info = manager.getActiveNetworkInfo();
 			Message msg=new Message();
@@ -225,8 +212,6 @@ public class center extends Activity implements OnTouchListener,
 	}
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
-		Log.e("TAG", "click");
 		switch (v.getId()) {
 		case R.id.aboutus_center_imagebutton:
 			this.finish();
@@ -240,12 +225,7 @@ public class center extends Activity implements OnTouchListener,
 		}
 	}
 
-	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		super.onBackPressed();
-		startActivity(new Intent(this, MainActivity.class));
-		this.finish();
-	}
+	
 
 	/**
 	 * ¿ªÆôAPPÇ°¼ì²âÍøÂç
@@ -308,7 +288,6 @@ public class center extends Activity implements OnTouchListener,
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// return allow_minCode;
 
 	}
 
@@ -415,5 +394,9 @@ public class center extends Activity implements OnTouchListener,
 				"application/vnd.android.package-archive");
 		startActivity(intent);
 	}
-
+	
+	public void onBackPressed() {
+		super.onBackPressed();
+		this.finish();
+	}
 }

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.aboutUs.infoCenter;
+import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.info.user_enter;
 import com.starbaby_03.info.user_register;
 import com.starbaby_03.main.MainActivity;
@@ -90,6 +91,8 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 	private EditText etView1;
 	private EditText etView2;
 	private AlertDialog alert;
+	private String userName;
+	private String userPwd;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -125,23 +128,21 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 				searchFile();
 			}else if(str.equals("release")){//分享出去
 				// 首先获取线上所有相册
-				Log.e("contentUtils.spGetInfo.contains", contentUtils.spGetInfo.getString("psw", ""));
-				if (contentUtils.spGetInfo.contains("psw")) {
-					getFrame(contentUtils.spGetInfo.getInt("uid", 0), 1);
-				}else{
+				if (contentUtils.sp.getString("psw", "") ==  null || contentUtils.sp.getString("psw", "") ==  "") {//没有登入
 					showEnter();
+				}else{//登入
+					getFrame(contentUtils.spGetInfo.getInt("uid", 0), 1);
 				}
 			}
 			break;	
 		case R.id.info_enter_view_ibnt1://登入
-			String name = etView1.getText().toString();
-			String pwd = etView2.getText().toString();
-			if(name != null && pwd != null){
-				contentUtils.psw = EncodeUtil.getMD5(pwd.getBytes());
-				Log.e("contentUtils.psw=", contentUtils.psw);
+			userName = etView1.getText().toString();
+			userPwd = etView2.getText().toString();
+			if(userName != null && userPwd != null){
+				contentUtils.psw = EncodeUtil.getMD5(userPwd.getBytes());
 				if(contentUtils.psw != null || contentUtils.psw !="")
 				contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
-				login(name,contentUtils.psw);
+				login(userName,contentUtils.psw);
 			}
 			break;
 		case R.id.info_enter_view_ibnt2://注册
@@ -657,6 +658,9 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 			iBntView1.setOnClickListener(this);
 			iBntView2.setOnClickListener(this);
 		}
+		void showPopEnter(){
+			
+		}
 		// 登入判断
 		public void login(String userName, String userPasword) {
 
@@ -668,44 +672,50 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 
 						@Override
 						public void onSuccess(Object o) {
-							// TODO Auto-generated method stub
 							final String result = (String) o;
 							scrollOperate.this.runOnUiThread(new Runnable() {
 
 								@Override
 								public void run() {
-									// TODO Auto-generated method stub
 									try {
-										contentUtils.msg = new JsonObject()
-												.getMSG(result);
+										contentUtils.msg = new JsonObject().getMSG(result);
 										if (contentUtils.msg == 1) {
-											contentUtils.psw = etView2.getText()
-													.toString();
-											contentUtils.uid = new JsonObject()
-													.getUID(result);
+											contentUtils.uid = new JsonObject().getUID(result);
+											contentUtils.authorId = new JsonObject().getUID(result)+"";
+											contentUtils.username = new JsonObject().getUSERNAME(result);
+											contentUtils.avatar = new JsonObject().getAVATAR(result);
+											contentUtils.authorUrl = new JsonObject().getAVATAR(result);
+											contentUtils.authorName = new JsonObject().getUSERNAME(result);
+											
+											contentUtils.sp.edit().putString("username",contentUtils.username).commit();
+											contentUtils.sp.edit().putString("psw",contentUtils.psw).commit();
+											
+											contentUtils.spinfo.edit().putString("username",contentUtils.username).commit();
+											contentUtils.spinfo.edit().putString("avatar",contentUtils.avatar).commit();
+											
 											contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();
-											contentUtils.username = new JsonObject()
-													.getUSERNAME(result);
 											contentUtils.spGetInfo.edit().putString("username", contentUtils.username).commit();
-											contentUtils.avatar = new JsonObject()
-													.getAVATAR(result);
-											contentUtils.spinfo
-													.edit()
-													.putString("username",
-															contentUtils.username)
-													.commit();
-											contentUtils.spinfo
-													.edit()
-													.putString("avatar",
-															contentUtils.avatar)
-													.commit();
+											contentUtils.spGetInfo.edit().putString("avatar", contentUtils.avatar).commit();
+											contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+											
+											contentUtils.Visiable = 1;
+										} else if (contentUtils.msg == -4) {
+											Toast.makeText(scrollOperate.this,
+													"用户信息不存在", 1000).show();
+										} else if (contentUtils.msg == -5) {
+											Toast.makeText(scrollOperate.this, "密码错误",
+													1000).show();
+										} else {
+											Toast.makeText(scrollOperate.this, "未知错误",
+													1000).show();
 										}
+
 									} catch (JSONException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
-									Log.e("result", result);
 									alert.dismiss();
+									Log.e("result", result);
 								}
 							});
 						}
@@ -717,5 +727,15 @@ public class scrollOperate extends Activity implements android.view.View.OnClick
 						}
 					});
 			DefaultThreadPool.getInstance().execute(httpost);
+		}
+		/**
+		 * 按BACK键
+		 */
+		@Override
+		public void onBackPressed()
+		// 无意中按返回键时要释放内存
+		{
+			super.onBackPressed();
+			this.finish();
 		}
 }

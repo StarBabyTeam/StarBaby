@@ -1,5 +1,7 @@
 package com.starbaby_03.utils;
 
+import android.util.Log;
+
 public class EncodeUtil {
 	 public static String getMD5(byte[] source) {
 		  String s = null;

@@ -122,7 +122,6 @@ public class mapStorage extends Activity implements OnItemClickListener,
 	}
 
 	public ArrayList<String> getAllFiles(File root) {
-		// fileList = new ArrayList<File>();
 		Filter pf = new Filter();
 		File files[] = root.listFiles(pf);
 		if (files != null) {
@@ -149,7 +148,7 @@ public class mapStorage extends Activity implements OnItemClickListener,
 					|| f.getName().matches("^.*?\\.(jpg|png|bmp|gif)$");
 		}
 	}
-
+	//取封面照
 	private String getWordData(ArrayList<String> list) {
 		String firstPhotoDir = "";
 		if (list == null || list.size() == 0) {
@@ -313,11 +312,15 @@ public class mapStorage extends Activity implements OnItemClickListener,
 		alter.show();
 	}
 
-	public void onBackPressed() {
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
 		super.onBackPressed();
 		mapStorage.this.finish();
-		Intent intent = new Intent(this, MainActivity.class);
-		startActivity(intent);
 	}
 
 }

@@ -75,21 +75,18 @@ public class user_enter extends Activity implements OnClickListener {
 	private String customid;
 	private TextView info_enter_textview5, info_enter_textview3;
 	private ProgressBar progressbar;
-	// public static SharedPreferences sp;
 	private String ename;
 	private String epsw;
 	private Boolean nameFlag = false;
 	private Boolean pswFlag = false;
 	private ImageView info_enter_imageview1;
-	private ImageView imgBnt1;
-	private CheckBox ck;
 	private String avatar = null;
+	private RelativeLayout rl1;
 
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.info_enter);
-
 		init();
 		listener();
 	}
@@ -98,165 +95,48 @@ public class user_enter extends Activity implements OnClickListener {
 		Bnt1.setOnClickListener(this);
 		Bnt2.setOnClickListener(this);
 		info_enter_textview5.setOnClickListener(this);
-
-		ck.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-			// @Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if (ck.isChecked()) {
-					contentUtils.sp.edit().putBoolean("ISCHECK", true).commit();
-					contentUtils.sp.edit().putBoolean("AUTO_ISCHECK", true)
-							.commit();
-					imgBnt1.setBackgroundResource(R.drawable.psw_lock);
-					System.out.println("记住密码已选中");
-				} else {
-					contentUtils.sp.edit().putBoolean("ISCHECK", false)
-							.commit();
-					contentUtils.sp.edit().putBoolean("AUTO_ISCHECK", false)
-							.commit();
-					imgBnt1.setBackgroundResource(R.drawable.psw_unlock);
-					System.out.println("记住密码没有被选中");
-				}
-			}
-
-		});
-
 	}
 
 	void init() {
-		ck = (CheckBox) findViewById(R.id.box);
 		Bnt1 = (Button) findViewById(R.id.info_enter_imagebutton2);
 		Bnt2 = (Button) findViewById(R.id.info_enter_imagebutton3);
-		imgBnt1 = (ImageView) findViewById(R.id.info_enter_imagebutton);
 		editText1 = (EditText) findViewById(R.id.info_enter_edittext1);
 		editText2 = (EditText) findViewById(R.id.info_enter_edittext2);
-
+		rl1 = (RelativeLayout) findViewById(R.id.info_enter_relativelayout7);
 		info_enter_imageview1 = (ImageView) findViewById(R.id.info_enter_imageview1);
 		progressbar = (ProgressBar) findViewById(R.id.info_enter_progressbar);
 		progressbar.setVisibility(View.GONE);
 		info_enter_textview5 = (TextView) findViewById(R.id.info_enter_textview);
-		avatar = contentUtils.spinfo.getString("avatar", "");
-		if (avatar.length() == 0) {
-			info_enter_imageview1.setBackgroundResource(R.drawable.info_head);
-		} else {
-			info_enter_imageview1.setBackgroundDrawable(getWallpaper()
-					.createFromPath(avatar));
-		}
 		Checked();
 	}
 
 	// 判断：是否记住密码，记住登入状态
 	public void Checked() {
-		ck.setEnabled(false);
-
-		// 监听edittext内是否有文字输入。逻辑判断
-		editText1.addTextChangedListener(new TextWatcher() {
-
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before,
-					int count) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-
-			}
-
-			@Override
-			public void afterTextChanged(Editable s) {
-				// TODO Auto-generated method stub
-				if (editText1.getText() == null
-						|| "".equals(editText1.getText().toString().trim())) {
-					ck.setEnabled(false);
-				} else {
-					editText2.addTextChangedListener(new TextWatcher() {
-
-						@Override
-						public void onTextChanged(CharSequence s, int start,
-								int before, int count) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void beforeTextChanged(CharSequence s,
-								int start, int count, int after) {
-							// TODO Auto-generated method stub
-
-						}
-
-						@Override
-						public void afterTextChanged(Editable s) {
-							// TODO Auto-generated method stub
-							if (editText2.getText() == null
-									|| "".equals(editText2.getText().toString()
-											.trim())) {
-								ck.setEnabled(false);
-							} else {
-								ck.setEnabled(true);
-								// 默认记住密码
-
-							}
-						}
-					});
-				}
-			}
-		});
-		if (contentUtils.sp.getBoolean("ISCHECK", false)) {
-			ck.setChecked(true);
-			Log.e("TAG", "1");
-			editText1.setText(contentUtils.sp.getString("userName", ""));
-			editText2.setText(contentUtils.sp.getString("psw", ""));
-
-			// 默认自动登入
-			if (contentUtils.sp.getBoolean("AUTO_ISCHECK", false)) {
-				Log.e("TAG", "2");
-				RelativeLayout relativelayout7 = (RelativeLayout) findViewById(R.id.info_enter_relativelayout7);
-				RelativeLayout relativelayout8 = (RelativeLayout) findViewById(R.id.info_enter_relativelayout8);
-				relativelayout7.setVisibility(4);
-				relativelayout8.setVisibility(1);
-				progressbar.setVisibility(View.VISIBLE);
-				enter();
-			}
+		//重新登入
+		if(contentUtils.sp.getString("psw", "") ==null || contentUtils.sp.getString("psw", "") ==""){
+			rl1.setVisibility(View.VISIBLE);
+		}else{//已经登入过。自动登入
+			progressbar.setVisibility(View.VISIBLE);
+			rl1.setVisibility(View.GONE);
+			Log.e("contentUtils.sp.getStringName", contentUtils.sp.getString("username", ""));
+			Log.e("contentUtils.sp.getStringPsw", contentUtils.sp.getString("psw", ""));
+			login(contentUtils.sp.getString("username", ""), contentUtils.sp.getString("psw", ""));
 		}
-
 	}
 
 	void enter() {
 		ename = editText1.getText().toString();
 		epsw = editText2.getText().toString();
-		if (TextUtils.isEmpty(ename)) {
-			Log.e("TAG", "3");
-			Toast.makeText(user_enter.this, "账号不能为空", Toast.LENGTH_SHORT)
-					.show();
-			return;
+		if(ename != null && epsw != null){
+			// 登录成功和记住密码框为选中状态才保存用户信息
+			progressbar.setVisibility(View.VISIBLE);
+			// 密码MD5一次
+			contentUtils.psw = EncodeUtil.getMD5(epsw.getBytes());
+			login(ename, contentUtils.psw);
+		}else{
+			Toast.makeText(this, "请输入完整信息", 1000).show();
 		}
-		if (TextUtils.isEmpty(epsw)) {
-			Log.e("TAG", "4");
-			Toast.makeText(user_enter.this, "密码不能为空", Toast.LENGTH_SHORT)
-					.show();
-			return;
-		}
-		// 登录成功和记住密码框为选中状态才保存用户信息
-		if (ck.isChecked()) {
-			// 记住用户名、密码、
-			Log.e("TAG", "5");
-			Editor editor = contentUtils.sp.edit();
-			editor.putString("userName", ename);
-			editor.putString("psw", epsw);
-			editor.commit();
-		}
-		Log.e("TAG", "6");
-		progressbar.setVisibility(View.VISIBLE);
-		// 密码MD5一次
-		contentUtils.psw = EncodeUtil.getMD5(epsw.getBytes());
-		contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
-		System.out.print("MD5" + contentUtils.psw);
-		login(ename, contentUtils.psw);
+		
 	}
 
 	// 登入判断
@@ -272,48 +152,38 @@ public class user_enter extends Activity implements OnClickListener {
 					public void onSuccess(Object o) {
 						// TODO Auto-generated method stub
 						final String result = (String) o;
-						customid = result.replace("\"", " ");
-						MyData.getInstance().setCustomerid(customid);
 						user_enter.this.runOnUiThread(new Runnable() {
 
 							@Override
 							public void run() {
-								// TODO Auto-generated method stub
 								progressbar.setVisibility(View.GONE);
 								try {
-									contentUtils.msg = new JsonObject()
-											.getMSG(result);
+									contentUtils.msg = new JsonObject().getMSG(result);
 									if (contentUtils.msg == 1) {
-										contentUtils.psw = editText2.getText()
-												.toString();
-//										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
-										contentUtils.uid = new JsonObject()
-												.getUID(result);
+//										contentUtils.psw = editText2.getText().toString();
+										contentUtils.uid = new JsonObject().getUID(result);
+										contentUtils.authorId = new JsonObject().getUID(result)+"";
+										contentUtils.username = new JsonObject().getUSERNAME(result);
+										contentUtils.avatar = new JsonObject().getAVATAR(result);
+										contentUtils.authorUrl = new JsonObject().getAVATAR(result);
+										contentUtils.authorName = new JsonObject().getUSERNAME(result);
+										
+										contentUtils.sp.edit().putString("username",contentUtils.username).commit();
+										contentUtils.sp.edit().putString("psw",contentUtils.psw).commit();
+										
+										contentUtils.spinfo.edit().putString("username",contentUtils.username).commit();
+										contentUtils.spinfo.edit().putString("avatar",contentUtils.avatar).commit();
+										
 										contentUtils.spGetInfo.edit().putInt("uid", contentUtils.uid).commit();
-										contentUtils.username = new JsonObject()
-												.getUSERNAME(result);
 										contentUtils.spGetInfo.edit().putString("username", contentUtils.username).commit();
-										contentUtils.avatar = new JsonObject()
-												.getAVATAR(result);
-										contentUtils.spinfo
-												.edit()
-												.putString("username",
-														contentUtils.username)
-												.commit();
-										contentUtils.spinfo
-												.edit()
-												.putString("avatar",
-														contentUtils.avatar)
-												.commit();
 										contentUtils.spGetInfo.edit().putString("avatar", contentUtils.avatar).commit();
-										Intent intent = new Intent(
-												user_enter.this,
-												infoCenter.class);
-										intent.putExtra(
-												weiboUtils.weibo_sharePicSucc_key,
-												weiboUtils.weibo_return_Flag3);
+										contentUtils.spGetInfo.edit().putString("psw", contentUtils.psw).commit();
+										
+										Intent intent = new Intent(user_enter.this,infoCenter.class);
+										intent.putExtra(weiboUtils.weibo_sharePicSucc_key,weiboUtils.weibo_return_Flag3);
 										weiboUtils.FLAG = 1;
 										startActivity(intent);
+										contentUtils.Visiable = 1;
 										user_enter.this.finish();
 									} else if (contentUtils.msg == -4) {
 										Toast.makeText(user_enter.this,
@@ -330,9 +200,7 @@ public class user_enter extends Activity implements OnClickListener {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-
 								Log.e("result", result);
-
 							}
 						});
 					}
@@ -356,7 +224,6 @@ public class user_enter extends Activity implements OnClickListener {
 
 					@Override
 					public void onSuccess(Object o) {
-						// TODO Auto-generated method stub
 						final String result = (String) o;
 						customid = result.replace("\"", " ");
 						MyData.getInstance().setCustomerid(customid);
@@ -364,7 +231,6 @@ public class user_enter extends Activity implements OnClickListener {
 
 							@Override
 							public void run() {
-								// TODO Auto-generated method stub
 								contentUtils.headImgUrl = result;
 								Log.e("headUrl=", result);
 							}
@@ -382,7 +248,6 @@ public class user_enter extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.info_enter_imagebutton2:
 			enter();
@@ -390,13 +255,6 @@ public class user_enter extends Activity implements OnClickListener {
 		case R.id.info_enter_imagebutton3:
 			Intent intent2 = new Intent(this, user_register.class);
 			startActivity(intent2);
-			break;
-		case R.id.info_enter_imagebutton:
-			if (ck.isChecked()) {
-				imgBnt1.setBackgroundResource(R.drawable.psw_lock);
-			} else {
-				imgBnt1.setBackgroundResource(R.drawable.psw_unlock);
-			}
 			break;
 		}
 	}

@@ -112,7 +112,7 @@ public class savePhoto {
 		{
 			folder.mkdir();
 		}
-		File headImgFile=new File( saveFile.operateName);
+		File headImgFile=new File(saveFile.operateName);
 		if(headImgFile.exists()){
 			headImgFile.delete();
 		}

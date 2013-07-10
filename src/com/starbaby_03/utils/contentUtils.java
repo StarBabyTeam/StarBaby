@@ -22,13 +22,23 @@ public class contentUtils {
 	public static String headImgUrl="";
 	public static int uid=0;//用户头像外部UID
 	public static int imgSize=1;//头像尺寸 :1-48*48px；2-120*120px；3-200*200px
-	
+	public static int numSecretAlbum;
+	/**
+	 * 可能没用。
+	 */
 	public static int msg=0;
 	public static String username=null;
 	public static String email=null;
 	public static String avatar=null;
 	public static String imageurl=null;
 	public static String psw=null;
+	/**
+	 * 
+	 */
+	public static String authorId = null;//回复人+发布人的id
+	public static String authorUrl = null;//回复人+发布人的的头像
+	public static String authorName = null;//回复人+发布人的name
+	public static int Visiable ;//1为自己的个人中心。显示私密相册。 2.为访问他人个人中心，不显示私密相册、
 	
 	public static SharedPreferences sp=null;//记住登入：保存密码和账号
 	public static SharedPreferences spinfo=null;

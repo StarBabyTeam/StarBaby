@@ -24,6 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.starbaby_03.R;
+import com.starbaby_03.camera.mCamera;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.utils.gallery_addview;
 
 public class addPic extends Activity implements OnItemClickListener ,OnClickListener{
@@ -149,5 +151,18 @@ public class addPic extends Activity implements OnItemClickListener ,OnClickList
 			this.finish();
 			break;
 		}
+	}
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		Intent intent=new Intent(this,mapShowMin2.class);
+		intent.putExtra("url", mapStorage.path2);
+		startActivity(intent);
+		this.finish();
 	}
 }

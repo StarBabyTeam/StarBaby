@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -36,6 +37,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -314,6 +318,9 @@ public class MainActivity extends FragmentActivity implements
 		private Context mContext;
 		private LinkedList<HotInfo> mInfos;
 		private XListView mListView;
+		ScaleImageView imageView;
+		TextView contentView;
+		TextView timeView;
 
 		public StaggeredAdapter(Context context, XListView xListView) {
 			mContext = context;
@@ -324,54 +331,63 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 
-			ViewHolder holder;
+//			ViewHolder holder;
 			HotInfo duitangInfo = mInfos.get(position);
 
-			if (convertView == null) {
+//			if (convertView == null) {
 				LayoutInflater layoutInflator = LayoutInflater.from(parent
 						.getContext());
 				convertView = layoutInflator.inflate(R.layout.main_infos_list,
 						null);
-				holder = new ViewHolder();
-				holder.imageView = (ScaleImageView) convertView
+//				holder = new ViewHolder();
+				imageView = (ScaleImageView) convertView
 						.findViewById(R.id.news_pic);
-				holder.contentView = (TextView) convertView
+				contentView = (TextView) convertView
 						.findViewById(R.id.news_name);
-				holder.timeView = (TextView) convertView
+				timeView = (TextView) convertView
 						.findViewById(R.id.news_note);
-				convertView.setTag(holder);
-			}
-			holder = (ViewHolder) convertView.getTag();
-			holder.imageView.setImageWidth(duitangInfo.getWidth());
-			holder.imageView.setImageHeight(duitangInfo.getHeight());
+//				convertView.setTag(holder);
+//			}
+//			holder = (ViewHolder) convertView.getTag();
+			imageView.setImageWidth(duitangInfo.getWidth());
+			imageView.setImageHeight(duitangInfo.getHeight());
 			if (duitangInfo.getAuthorList().size() == 1
 					&& duitangInfo.getCommentList().size() == 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
-				holder.timeView.setVisibility(8);
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
+				timeView.setVisibility(8);
 			} else if (duitangInfo.getAuthorList().size() > 1
 					&& duitangInfo.getCommentList().size() > 1) {
-				holder.contentView.setText(duitangInfo.getAuthorList().get(0)
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
-				holder.timeView.setText(duitangInfo.getAuthorList().get(1)
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				SpannableString spStr2 = new SpannableString(duitangInfo.getAuthorList().get(1)
 						+ ":" + duitangInfo.getCommentList().get(1));
+				spStr2.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(1).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr2.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(1).length()+1,spStr2.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
+				timeView.setText(spStr2);
 			}
 			else{
-				holder.contentView.setVisibility(8);
-				holder.timeView.setVisibility(8);
+				contentView.setVisibility(8);
+				timeView.setVisibility(8);
 			}
 			if(duitangInfo.getIsrc().length()!=0){
-				mImageFetcher.loadImage(duitangInfo.getIsrc(), holder.imageView);
+				mImageFetcher.loadImage(duitangInfo.getIsrc(), imageView);
 			}
 			return convertView;
 		}
 
-		class ViewHolder {
-			ScaleImageView imageView;
-			TextView contentView;
-			TextView timeView;
-
-		}
+//		class ViewHolder {
+//			ScaleImageView imageView;
+//			TextView contentView;
+//			TextView timeView;
+//
+//		}
 
 		@Override
 		public int getCount() {
@@ -379,7 +395,7 @@ public class MainActivity extends FragmentActivity implements
 		}
 
 		@Override
-		public Object getItem(int arg0) {
+		public HotInfo getItem(int arg0) {
 			return mInfos.get(arg0);
 		}
 
@@ -433,15 +449,24 @@ public class MainActivity extends FragmentActivity implements
 			imageView.setImageHeight(duitangInfo.getHeight());
 			if (duitangInfo.getAuthorList().size() == 1
 					&& duitangInfo.getCommentList().size() == 1) {
-				contentView.setText(duitangInfo.getAuthorList().get(0)
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
 				timeView.setVisibility(8);
 			} else if (duitangInfo.getAuthorList().size() > 1
 					&& duitangInfo.getCommentList().size() > 1) {
-				contentView.setText(duitangInfo.getAuthorList().get(0)
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
 						+ ":" + duitangInfo.getCommentList().get(0));
-				timeView.setText(duitangInfo.getAuthorList().get(1)
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				SpannableString spStr2 = new SpannableString(duitangInfo.getAuthorList().get(1)
 						+ ":" + duitangInfo.getCommentList().get(1));
+				spStr2.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(1).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr2.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(1).length()+1,spStr2.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
+				timeView.setText(spStr2);
 			}else{
 				contentView.setVisibility(8);
 				timeView.setVisibility(8);
@@ -500,7 +525,7 @@ public class MainActivity extends FragmentActivity implements
 			@Override
 			public void onItemClick(PLA_AdapterView<?> parent, View view,
 					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+				ScrollUtils.picId = mAdapter.getItem(position - 1).getPicId();
 				startActivity(new Intent(MainActivity.this,author.class));
 			}
 		});
@@ -683,6 +708,13 @@ public class MainActivity extends FragmentActivity implements
 		@Override
 		public void onClick(View v) {
 			mPager.setCurrentItem(index);
+			if( index == 0){
+				t1.setBackgroundResource(R.drawable.main_title_over);
+				t2.setBackgroundResource(R.drawable.main_title_in);
+			}else if(index == 1){
+				t1.setBackgroundResource(R.drawable.main_title_in);
+				t2.setBackgroundResource(R.drawable.main_title_over);
+			}
 		}
 	};
 
@@ -692,9 +724,6 @@ public class MainActivity extends FragmentActivity implements
 	public class MyOnPageChangeListener implements OnPageChangeListener {
 
 		int one = offset * 2 + bmpW;// 页卡1 -> 页卡2 偏移量
-
-		// int two = one * 2;// 页卡1 -> 页卡3 偏移量
-
 		@Override
 		public void onPageSelected(int arg0) {
 			Animation animation = null;
@@ -702,11 +731,15 @@ public class MainActivity extends FragmentActivity implements
 			case 0:
 				if (currIndex == 1) {
 					animation = new TranslateAnimation(one, 0, 0, 0);
+					t1.setBackgroundResource(R.drawable.main_title_over);
+					t2.setBackgroundResource(R.drawable.main_title_in);
 				}
 				break;
 			case 1:
 				if (currIndex == 0) {
 					animation = new TranslateAnimation(offset, one, 0, 0);
+					t1.setBackgroundResource(R.drawable.main_title_in);
+					t2.setBackgroundResource(R.drawable.main_title_over);
 				}
 				break;
 			}
@@ -761,7 +794,7 @@ public class MainActivity extends FragmentActivity implements
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
 		View popWindows = inflate.inflate(R.layout.main_popwindows, null);
 		pop = new PopupWindow(popWindows,
-				android.app.ActionBar.LayoutParams.WRAP_CONTENT,
+				android.app.ActionBar.LayoutParams.FILL_PARENT,
 				android.app.ActionBar.LayoutParams.WRAP_CONTENT);
 		pop.setFocusable(true);// 设置PopupWindow可获得焦点
 		pop.setOutsideTouchable(true);// 设置非PopupWindow区域不可触摸
@@ -769,8 +802,10 @@ public class MainActivity extends FragmentActivity implements
 		bnt1 = (Button) popWindows.findViewById(R.id.main_popwindows_button1);
 		bnt2 = (Button) popWindows.findViewById(R.id.main_popwindows_button2);
 		bnt3 = (Button) popWindows.findViewById(R.id.main_popwindows_button3);
+		pop.setAnimationStyle(R.style.PopupAnimation);
 		pop.showAtLocation(findViewById(R.id.main_appmain_rl), Gravity.BOTTOM
 				| Gravity.CENTER_HORIZONTAL, 0, 0);
+		pop.update();
 		bnt1.setFocusable(true);
 		bnt2.setFocusable(true);
 		bnt3.setFocusable(true);

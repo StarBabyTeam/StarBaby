@@ -22,10 +22,27 @@ public class serach {
 					getFile(f);
 				}else{
 					mapStorage.listFile.add(f);
-//					infoCenter.listFile.add(f);
 				}
 			}
 		}
+	}
+	public int getFile3(File root)
+	{	
+		int i = 0;
+		File file[]=root.listFiles();
+		if(file!=null)
+		{
+			for(File f:file)
+			{
+				if(f.isFile())
+				{
+					getFile(f);
+				}else{
+					i = i+ 1;
+				}
+			}
+		}
+		return i;
 	}
 	public void getFile2(File root)
 	{
@@ -58,7 +75,6 @@ public class serach {
 					
 				}else{
 					mapStorage.listword.add(f.getAbsolutePath());
-					System.out.print(f.getAbsolutePath());
 				}
 			}
 	}
@@ -79,8 +95,6 @@ public class serach {
 					
 				}else{
 					getFile(f);
-//					lstFile.add(f.toString());
-					Log.e("TAG","2");
 				}
 			}
 		}

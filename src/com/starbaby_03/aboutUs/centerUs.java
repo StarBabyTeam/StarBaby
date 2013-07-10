@@ -11,7 +11,9 @@ import org.json.JSONException;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.Gallery.mapStorage;
+import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.info.user_enter;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.net.AsyncHttpPost;
 import com.starbaby_03.net.DefaultThreadPool;
 import com.starbaby_03.net.RequestParameter;
@@ -76,7 +78,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 		@Override
 		public void handleMessage(Message msg) {
-			// TODO Auto-generated method stub
 			switch(msg.what){
 			case 1:
 				imgView1.setImageBitmap(headbit);
@@ -89,7 +90,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.aboutus_centerus);
@@ -98,30 +98,34 @@ public class centerUs extends Activity implements OnClickListener {
 	}
 
 	private void listener() {
-		// TODO Auto-generated method stub
 		iBnt1.setOnClickListener(this);
 		iBnt2.setOnClickListener(this);
-		imgView1.setOnClickListener(this);
+		if(contentUtils.Visiable == 1){
+			imgView1.setOnClickListener(this);
+		}
+		
 	}
 
 	private void init() {
-		// TODO Auto-generated method stub
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_centerus_imagebutton);
 		iBnt2 = (ImageButton) findViewById(R.id.aboutus_centerus_imagebutton2);
+		if(contentUtils.Visiable ==1){
+			iBnt2.setVisibility(1);
+		}else if(contentUtils.Visiable == 2){
+			iBnt2.setVisibility(8);
+		}
 		imgView1 = (ImageView) findViewById(R.id.aboutus_centerus_imageview2);
-		avatar = contentUtils.spinfo.getString("avatar", "");
+		avatar = contentUtils.authorUrl;
 		if (avatar .length()==0) {
 			imgView1.setBackgroundResource( R.drawable.info_head);
-			
 		} else {
 			Thread thread= new Thread(){
 
 				@Override
 				public void run() {
-					// TODO Auto-generated method stub
 					Message msg=new Message();
 					msg.what=1;
-					headbit=new meshImgUrl().returnBitMap(contentUtils.spinfo.getString("avatar", ""));
+					headbit=new meshImgUrl().returnBitMap(avatar);
 					mHandler.sendMessage(msg);
 					super.run();
 				}
@@ -132,7 +136,7 @@ public class centerUs extends Activity implements OnClickListener {
 		}
 		textview1 = (TextviewView3) findViewById(R.id.aboutus_centerus_textview2);
 		textview1.setHead("爱称");
-		textview1.setText(contentUtils.spinfo.getString("username", ""));
+		textview1.setText(contentUtils.authorName);
 		textview2 = (TextviewView3) findViewById(R.id.aboutus_centerus_textview3);
 		textview2.setHead("生日");
 		textview3 = (TextviewView4) findViewById(R.id.aboutus_centerus_textview4);
@@ -154,11 +158,9 @@ public class centerUs extends Activity implements OnClickListener {
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.aboutus_centerus_imagebutton:
-			startActivity(new Intent(centerUs.this, center.class));
-			centerUs.this.finish();
+			this.finish();
 			break;
 		case R.id.aboutus_centerus_imagebutton2://修改头像
 			// 密码进行MD5加密
@@ -172,7 +174,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 					@Override
 					public void run() {
-						// TODO Auto-generated method stub
 						super.run();
 						String request = UploadUtil.uploadFile(file,
 								contentUtils.registerImgUrl);
@@ -197,37 +198,6 @@ public class centerUs extends Activity implements OnClickListener {
 		}
 	}
 	
-//	private void showDialog() {
-//		// TODO Auto-generated method stub
-//		LayoutInflater inflate= LayoutInflater.from(this);
-//		View view = inflate.inflate(R.layout.aboutus_centerus_view, null);
-//		AlertDialog.Builder builder = new AlertDialog.Builder(centerUs.this);
-//		builder.setTitle("修改头像");
-//		builder.setView(view);
-////		iv=(ImageView) view. findViewById(R.id.aboutus_centerus_view_imageview1);
-////		iv.setOnClickListener(new OnClickListener() {
-////			
-////			@Override
-////			public void onClick(View v) {
-////				// TODO Auto-generated method stub
-////				ShowHeadPhoto();
-////			}
-////		});
-//		builder.setNegativeButton("取消", new OnClickListener() {
-//			
-//			public void onClick(DialogInterface dialog, int which) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				
-//			}
-//		});
-//		
-//	}
 
 	/**
 	 ** 设置头像
@@ -239,7 +209,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
 						Intent intent = new Intent(Intent.ACTION_GET_CONTENT,
 								null);
 						intent.setDataAndType(
@@ -252,7 +221,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
 						Intent intent = new Intent(
 								MediaStore.ACTION_IMAGE_CAPTURE);
 						intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri
@@ -301,7 +269,6 @@ public class centerUs extends Activity implements OnClickListener {
 					Bitmap headImgBitmap = BitmapFactory.decodeFile(tempFile
 							.getAbsolutePath());
 					imgView1.invalidate();
-//					imgView1.setBackgroundDrawable(getWallpaper().createFromPath(picPath));
 					imgView1.setImageBitmap(BitmapFactory.decodeFile(picPath));
 				}
 			}
@@ -322,13 +289,6 @@ public class centerUs extends Activity implements OnClickListener {
 			intent.putExtra("return-data", true);
 			startActivityForResult(intent, 3);
 		}
-	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		super.onBackPressed();
-		centerUs.this.finish();
-		Intent intent = new Intent(this, center.class);
-		startActivity(intent);
-	}
 
 	// post方法改变头像
 	public void changeHeadImg(int uid, String psw, String url) {
@@ -350,7 +310,6 @@ public class centerUs extends Activity implements OnClickListener {
 
 							@Override
 							public void run() {
-								// TODO Auto-generated method stub
 								String msg = result;
 								Log.e("msg=", result);
 								Toast.makeText(centerUs.this, "保存成功", 1000).show();
@@ -365,5 +324,15 @@ public class centerUs extends Activity implements OnClickListener {
 					}
 				});
 		DefaultThreadPool.getInstance().execute(httppost);
+	}
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		this.finish();
 	}
 }

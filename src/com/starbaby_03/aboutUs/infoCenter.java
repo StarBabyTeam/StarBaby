@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.example.starbaby_03.R;
 import com.starbaby_03.Gallery.mapStorage;
+import com.starbaby_03.camera.mCamera;
 import com.starbaby_03.main.HotInfo;
 import com.starbaby_03.main.Helper;
 import com.starbaby_03.main.ImageFetcher;
@@ -38,6 +39,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -46,6 +48,9 @@ import android.os.Parcelable;
 import android.os.AsyncTask.Status;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -246,15 +251,26 @@ public class infoCenter extends Activity implements IXListViewListener,
 					.findViewById(R.id.news_note);
 			imageView.setImageWidth(duitangInfo.getWidth());
 			imageView.setImageHeight(duitangInfo.getHeight());
-			if (duitangInfo.getAuthorList().size() > 1) {
-				contentView.setText(duitangInfo.getAuthorList().get(0)
-						+ duitangInfo.getCommentList().get(0));
-				timeView.setText(duitangInfo.getAuthorList().get(1)
-						+ duitangInfo.getCommentList().get(1));
-			} else if (duitangInfo.getAuthorList().size() == 1) {
-				contentView.setText(duitangInfo.getAuthorList().get(0)
-						+ duitangInfo.getCommentList().get(0));
+			if (duitangInfo.getAuthorList().size() == 1
+					&& duitangInfo.getCommentList().size() == 1) {
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
+						+ ":" + duitangInfo.getCommentList().get(0));
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
 				timeView.setVisibility(8);
+			} else if (duitangInfo.getAuthorList().size() > 1
+					&& duitangInfo.getCommentList().size() > 1) {
+				SpannableString spStr1 = new SpannableString(duitangInfo.getAuthorList().get(0)
+						+ ":" + duitangInfo.getCommentList().get(0));
+				spStr1.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(0).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr1.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(0).length()+1,spStr1.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				SpannableString spStr2 = new SpannableString(duitangInfo.getAuthorList().get(1)
+						+ ":" + duitangInfo.getCommentList().get(1));
+				spStr2.setSpan(new ForegroundColorSpan(0xff586b97), 0,duitangInfo.getAuthorList().get(1).length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				spStr2.setSpan(new ForegroundColorSpan(0xff333333), duitangInfo.getAuthorList().get(1).length()+1,spStr2.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+				contentView.setText(spStr1);
+				timeView.setText(spStr2);
 			} else if (duitangInfo.getAuthorList().size() == 0) {
 				contentView.setVisibility(8);
 				timeView.setVisibility(8);
@@ -279,14 +295,8 @@ public class infoCenter extends Activity implements IXListViewListener,
 		}
 
 		public void addItemRefresh(List<HotInfo> datas) {
-//			if (FLAG == 2) {
 				mInfos.clear();
 				mInfos.addAll(datas);
-//			} else if (FLAG == 1) {
-//				mInfos.addAll(datas);
-//				mInfos.clear();
-//			}
-
 		}
 
 		public void addItemLast(List<HotInfo> datas) {
@@ -318,7 +328,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 			@Override
 			public void onItemClick(PLA_AdapterView<?> parent, View view,
 					int position, long id) {
-				ScrollUtils.picId = duitangs.get(position-1).getPicId();
+				ScrollUtils.picId = mAdapter.getItem(position-1).getPicId();
 				startActivity(new Intent(infoCenter.this,author.class));
 			}
 		});
@@ -339,6 +349,12 @@ public class infoCenter extends Activity implements IXListViewListener,
 		iBnt1 = (ImageButton) findViewById(R.id.aboutus_infocenter_ibnt1);
 		tv3 = (TextView) findViewById(R.id.aboutus_infocenter_tv3);
 		tv4 = (TextView) findViewById(R.id.aboutus_infocenter_tv4);
+		Log.e("contentUtils.Visiable == ", contentUtils.Visiable +"");
+		if(contentUtils.Visiable == 2){
+			tv4.setVisibility(8);
+		}else if(contentUtils.Visiable == 1){
+			tv4.setVisibility(1);
+		}
 		tv5 = (TextView) findViewById(R.id.aboutus_infocenter_tv5);
 		iv1 = (ImageView) findViewById(R.id.aboutus_infocenter_iv1);//用户头像
 		Thread thread2 = new Thread(){
@@ -348,13 +364,13 @@ public class infoCenter extends Activity implements IXListViewListener,
 				super.run();
 				Message msg = new Message();
 				msg.what = 2;
-				bit = new meshImgUrl().returnBitMap(contentUtils.spGetInfo.getString("avatar", ""));
+				bit = new meshImgUrl().returnBitMap(contentUtils.authorUrl);
 				handler.sendMessage(msg);
 			}
 		};
 		thread2.start();
-		tv5.setText(contentUtils.spGetInfo.getString("username", ""));
-		tv4.setText("\n" + "私密" + "\n" + "相册");
+		tv5.setText(contentUtils.authorName);
+		tv4.setText("   "+contentUtils.numSecretAlbum+"\n" + "私密" + "\n" + "相册");
 	}
 	private void InitViewPager() {
 		inflateGrideView();
@@ -373,13 +389,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 		list.add(view1);
 		list.add(view2);
 		pager.setAdapter(new MyPagerAdapter(list));
-//		Log.e("albumsize=", albumsize + "");
-//		if (albumsize > 1) {
-//			currentPag = 0;
-//		} else {
-//			currentPag = 1;
-//		}
-//		pager.setCurrentItem(0);
 	}
 	// 第一次导入刷新
 	@Override
@@ -442,7 +451,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 							} else if(albumsize == 1){
 								int albumid = json.getInt("albumid");
 								shortUrl = contentUtils.photoList + albumid+ "/" ;
-//										+ "/" + 1;
 								onLoad();
 								pager.setCurrentItem(1);// 相册为1个，展示素有图片。或者相册为空
 							}
@@ -473,8 +481,7 @@ public class infoCenter extends Activity implements IXListViewListener,
 		view1 = inflate.inflate(R.layout.aboutus_infocenter_store, null);
 		gv = (GridView) view1
 				.findViewById(R.id.aboutus_infocenter_store_gridview);
-		getFrame(contentUtils.uid, 1);
-//		shortUrl = contentUtils.photoList + "323485" + "/";//初始化BUG
+		getFrame(Integer.parseInt(contentUtils.authorId), 1);
 
 	}
 
@@ -517,7 +524,6 @@ public class infoCenter extends Activity implements IXListViewListener,
 
 		@Override
 		public View getView(final int position, View convertView, ViewGroup arg2) {
-			// TODO Auto-generated method stub
 			View vi = convertView;
 			if (convertView == null)
 				vi = inflater.inflate(R.layout.aboutus_infocenter_store_frame, null);
@@ -589,17 +595,23 @@ public class infoCenter extends Activity implements IXListViewListener,
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.aboutus_infocenter_ibnt1:
+		case R.id.aboutus_infocenter_ibnt1://返回上一级
+			contentUtils.Visiable = 1;
 			this.finish();
 			break;
-		case R.id.aboutus_infocenter_tv3:
+		case R.id.aboutus_infocenter_tv3://个性相册
 			pager.setCurrentItem(0);
 			break;
-		case R.id.aboutus_infocenter_tv4:
+		case R.id.aboutus_infocenter_tv4://私密相册
 			startActivity(new Intent(this, mapStorage.class));
 			break;
 		case R.id.aboutus_infocenter_iv1:// 点击头像查看信息
-			startActivity(new Intent(this, center.class));
+			if(contentUtils.Visiable ==1){
+				startActivity(new Intent(this, center.class));
+			}else if(contentUtils.Visiable == 2){
+				startActivity(new Intent(this, centerUs.class));
+			}
+			
 			break;
 		}
 	}
@@ -612,5 +624,16 @@ public class infoCenter extends Activity implements IXListViewListener,
 		FLAG = 2;
 		onRefresh();
 		pager.setCurrentItem(1);
+	}
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		contentUtils.Visiable = 1;
+		this.finish();
 	}
 }

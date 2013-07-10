@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Vector;
 
 import com.example.starbaby_03.R;
+import com.starbaby_03.camera.mCamera;
+import com.starbaby_03.main.MainActivity;
 import com.starbaby_03.utils.galleryUtils;
 
 import android.app.Activity;
@@ -42,12 +44,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class addPic_show extends Activity implements OnItemClickListener,OnClickListener{
+public class addPic_show extends Activity implements OnItemClickListener,
+		OnClickListener {
 	private GridView gv;
-	private ArrayList<String> pathList;//图片list
-	private HashMap<Integer ,String > addPath=new HashMap<Integer , String>();
-	private boolean flag=false;
-	private ImageButton iBnt1,iBnt2;
+	private ArrayList<String> pathList;// 图片list
+	private HashMap<Integer, String> addPath = new HashMap<Integer, String>();
+	private boolean flag = false;
+	private ImageButton iBnt1, iBnt2;
 	private ImageAdapter adapter;
 	private String str;
 	private TextView tv;
@@ -55,10 +58,11 @@ public class addPic_show extends Activity implements OnItemClickListener,OnClick
 		@Override
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
-			adapter = new ImageAdapter(addPic_show.this,true,str);
+			adapter = new ImageAdapter(addPic_show.this, true, str);
 			gv.setAdapter(adapter);
 		}
 	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,18 +70,21 @@ public class addPic_show extends Activity implements OnItemClickListener,OnClick
 		listener();
 		new SearchImage();
 	}
-	void init(){
+
+	void init() {
 		setContentView(R.layout.gallery_addpic_min);
-		gv=(GridView) findViewById(R.id.gallery_addpic_min_grideview);
-		iBnt1=(ImageButton) findViewById(R.id.gallery_addpic_min_imagebutton1);
-		iBnt2=(ImageButton) findViewById(R.id.gallery_addpic_min_imagebutton2);
-		tv=(TextView) findViewById(R.id.gallery_addpic_min_textview);
+		gv = (GridView) findViewById(R.id.gallery_addpic_min_grideview);
+		iBnt1 = (ImageButton) findViewById(R.id.gallery_addpic_min_imagebutton1);
+		iBnt2 = (ImageButton) findViewById(R.id.gallery_addpic_min_imagebutton2);
+		tv = (TextView) findViewById(R.id.gallery_addpic_min_textview);
 	}
-	void listener(){
+
+	void listener() {
 		gv.setOnItemClickListener(this);
 		iBnt1.setOnClickListener(this);
 		iBnt2.setOnClickListener(this);
 	}
+
 	public class SearchImage extends Thread {
 		public SearchImage() {
 			start();
@@ -130,44 +137,47 @@ public class addPic_show extends Activity implements OnItemClickListener,OnClick
 		}
 	}
 
-	public void onItemClick(AdapterView<?> arg0, View view, int position, long arg3) {
+	public void onItemClick(AdapterView<?> arg0, View view, int position,
+			long arg3) {
 		adapter.changeState(position);
-		if(addPath.containsKey(position)){
+		if (addPath.containsKey(position)) {
 			addPath.remove(position);
-			Log.e("addPath=",addPath+"");
-		}else{
-			addPath.put(position,adapter.pathList.get(position).toString());
-			Log.e("addPath2=",addPath+"");
+			Log.e("addPath=", addPath + "");
+		} else {
+			addPath.put(position, adapter.pathList.get(position).toString());
+			Log.e("addPath2=", addPath + "");
 		}
 		int length = 0;
 		length = addPath.size();
 		tv.invalidate();
-		tv.setText("当前选择了"+length+"张");
+		tv.setText("当前选择了" + length + "张");
 	}
 
 	@Override
 	public void onClick(View v) {
-		switch (v.getId()){
+		switch (v.getId()) {
 		case R.id.gallery_addpic_min_imagebutton1:
 			this.finish();
 			break;
 		case R.id.gallery_addpic_min_imagebutton2:
-			for(Integer key:addPath.keySet()){
-				String picPath=addPath.get(key);
+			for (Integer key : addPath.keySet()) {
+				String picPath = addPath.get(key);
 				Log.e("picPath=", picPath);
-				String picName=addPath.get(key).substring(addPath.get(key).lastIndexOf("/")+1);
+				String picName = addPath.get(key).substring(
+						addPath.get(key).lastIndexOf("/") + 1);
 				Log.e("picName=", picName);
-				File file=new File(mapShowMin2.str);
-				Log.e("file=", file+"");
-				if(!file.exists()){
+				File file = new File(mapShowMin2.str);
+				Log.e("file=", file + "");
+				if (!file.exists()) {
 					file.mkdir();
-				}else{
+				} else {
 					try {
-						Bitmap bmp=BitmapFactory.decodeFile(picPath);
-						File saveFile=new File(mapShowMin2.str+"/"+System.currentTimeMillis()+".jpg");
+						Bitmap bmp = BitmapFactory.decodeFile(picPath);
+						File saveFile = new File(mapShowMin2.str + "/"
+								+ System.currentTimeMillis() + ".jpg");
 						BufferedOutputStream bos;
-						bos = new BufferedOutputStream(
-						        new FileOutputStream(saveFile));
+						bos = new BufferedOutputStream(new FileOutputStream(
+								saveFile));
 						bmp.compress(Bitmap.CompressFormat.JPEG, 80, bos);
 						bos.flush();
 						bos.close();
@@ -178,11 +188,22 @@ public class addPic_show extends Activity implements OnItemClickListener,OnClick
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					
+
 				}
 			}
 			Toast.makeText(this, "添加完成", 1000).show();
 			break;
 		}
+	}
+
+	/**
+	 * 按BACK键
+	 */
+	@Override
+	public void onBackPressed()
+	// 无意中按返回键时要释放内存
+	{
+		super.onBackPressed();
+		this.finish();
 	}
 }
